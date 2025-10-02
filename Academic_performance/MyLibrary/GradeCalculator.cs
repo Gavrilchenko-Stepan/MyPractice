@@ -11,7 +11,7 @@ namespace MyLibrary
         public object CalculateAverageGrade(List<int> grades, string disciplineName)
         {
             if (grades == null || grades.Count == 0)
-                return $"По дисциплине {disciplineName} нет данных об оценках.";
+                throw new InvalidOperationException($"По дисциплине {disciplineName} нет данных об оценках.");
 
             double sum = 0;
             foreach (var grade in grades)
