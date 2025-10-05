@@ -8,35 +8,30 @@ namespace Academic_performance_Tests
     [TestClass]
     public class TGradeCalculator
     {
-        private GradeCalculator _calculator;
-        private const string DisciplineName = "Математика";
-        [TestInitialize]
-        public void Setup()
-        {
-            _calculator = new GradeCalculator();
-        }
-
         [TestMethod]
         public void CalculateAverageGrade_WithAllGrades_ReturnsCorrectAverage()
         {
-            var grades = new List<int> { 4, 5, 5 };
-            var expectedAverage = 4.67;
+            GradeCalculator calculator = new GradeCalculator();
 
-            var result = _calculator.CalculateAverageGrade(grades, DisciplineName);
+            List<int> grades = new List<int> { 4, 5, 5 };
+            double expectedAverage = 4.67;
 
-            Assert.AreEqual(expectedAverage, (double)result, 0.01);
+            double result = calculator.CalculateAverageGrade(grades);
+
+            Assert.AreEqual(expectedAverage, result, 0.01);
         }
 
         [TestMethod]
-        public void CalculateAverageGrade_WithEmptyGrades_ReturnsNoDataMessage()
+        public void CalculateAverageGrade_WithEmptyGrades_ReturnsZero()
         {
-            var grades = new List<int>();
-            var expectedMessage = $"По дисциплине {DisciplineName} нет данных об оценках.";
+            GradeCalculator calculator = new GradeCalculator();
 
-            var exception = Assert.ThrowsException<InvalidOperationException>(() =>
-_calculator.CalculateAverageGrade(grades, DisciplineName));
+            List<int> grades = new List<int>();
+            double expected = 0.0;
 
-            Assert.AreEqual(expectedMessage, exception.Message);
+            double result = calculator.CalculateAverageGrade(grades);
+
+            Assert.AreEqual(expected, result);
         }
     }
 }

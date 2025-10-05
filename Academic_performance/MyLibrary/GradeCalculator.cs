@@ -8,10 +8,10 @@ namespace MyLibrary
 {
     public class GradeCalculator
     {
-        public object CalculateAverageGrade(List<int> grades, string disciplineName)
+        public double CalculateAverageGrade(List<int> grades)
         {
             if (grades == null || grades.Count == 0)
-                throw new InvalidOperationException($"По дисциплине {disciplineName} нет данных об оценках.");
+                return 0.0;
 
             double sum = 0;
             foreach (var grade in grades)
