@@ -14,11 +14,12 @@ namespace Academic_performance_Tests
             GradeCalculator calculator = new GradeCalculator();
 
             List<int> grades = new List<int> { 4, 5, 5 };
+            const string DisciplineName = "Математика";
             double expectedAverage = 4.67;
 
-            double result = calculator.CalculateAverageGrade(grades);
+            object result = calculator.CalculateAverageGrade(grades, DisciplineName);
 
-            Assert.AreEqual(expectedAverage, result, 0.01);
+            Assert.AreEqual(expectedAverage, (double)result, 0.01);
         }
 
         [TestMethod]
@@ -27,11 +28,12 @@ namespace Academic_performance_Tests
             GradeCalculator calculator = new GradeCalculator();
 
             List<int> grades = new List<int>();
-            double expected = 0.0;
+            const string DisciplineName = "Математика";
+            var expectedMessage = $"По дисциплине {DisciplineName} нет данных об оценках.";
 
-            double result = calculator.CalculateAverageGrade(grades);
+            object result = calculator.CalculateAverageGrade(grades, DisciplineName);
 
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(expectedMessage, result);
         }
     }
 }
