@@ -23,7 +23,7 @@ namespace Academic_performance_Tests
         }
 
         [TestMethod]
-        public void CalculateAverageGrade_WithEmptyGrades_ReturnsZero()
+        public void CalculateAverageGrade_WithEmptyGrades_ReturnsNoDataMessage()
         {
             GradeCalculator calculator = new GradeCalculator();
 
