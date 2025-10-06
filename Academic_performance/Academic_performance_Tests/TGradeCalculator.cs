@@ -35,5 +35,17 @@ namespace Academic_performance_Tests
 
             Assert.AreEqual(expectedMessage, result);
         }
+
+        [TestMethod]
+        public void CalculateAverageGrade_WithGradesForMultipleDisciplines_CalculatesOnlyForRequestedDiscipline()
+        {
+            GradeCalculator calculator = new GradeCalculator();
+            List<int> mathGrades = new List<int> { 5, 4, 5, 3 };
+            List<int> physicsGrades = new List<int> { 4, 4, 5 };
+
+            object result = calculator.CalculateAverageGrade(physicsGrades, "Физика");
+
+            Assert.AreEqual(4.33, (double)result, 0.01);
+        }
     }
 }
