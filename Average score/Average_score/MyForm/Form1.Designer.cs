@@ -90,6 +90,7 @@
             this.buttonCalculation.TabIndex = 5;
             this.buttonCalculation.Text = "Рассчитать средний балл";
             this.buttonCalculation.UseVisualStyleBackColor = true;
+            this.buttonCalculation.Click += new System.EventHandler(this.buttonCalculation_Click);
             // 
             // richTextBoxResult
             // 
@@ -114,6 +115,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "Система оценок";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

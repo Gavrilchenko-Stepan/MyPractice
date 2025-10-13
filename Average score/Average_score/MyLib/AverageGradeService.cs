@@ -28,11 +28,11 @@ namespace MyLib
                 var grades = _gradesRepository.GetStudentGrades(studentId, subjectId);
 
                 if (grades == null || !grades.Any())
-                    return $"Не найдено оценок для студента ID {studentId} по дисциплине ID {subjectId}";
+                    return $"Не найдено оценок для студента c ID {studentId} по дисциплине c ID {subjectId}";
 
                 double average = grades.Average(g => g.GradeValue);
 
-                return $"Средний балл студента ID {studentId} по дисциплине ID {subjectId}: {average:F2}";
+                return $"Средний балл студента c ID {studentId} по дисциплине c ID {subjectId}: {average:F2}";
             }
             catch (Exception ex)
             {
