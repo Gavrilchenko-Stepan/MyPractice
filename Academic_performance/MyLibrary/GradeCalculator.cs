@@ -8,19 +8,6 @@ namespace MyLibrary
 {
     public class GradeCalculator
     {
-        public object CalculateAverageGrade(List<int> grades, string disciplineName)
-        {
-            if (grades == null || grades.Count == 0)
-                return $"По дисциплине {disciplineName} нет данных об оценках.";
-
-            double sum = 0;
-            foreach (var grade in grades)
-            {
-                sum += grade;
-            }
-
-            double average = sum / grades.Count;
-            return Math.Round(average, 2);
-        }
+       
     }
 }
