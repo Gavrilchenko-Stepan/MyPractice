@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AverageGradeService.cs" />
     <Compile Include="Grade.cs" />
     <Compile Include="GradesRepository.cs" />
     <Compile Include="IGradesRepository.cs" />
