@@ -139,7 +139,25 @@ namespace MyLibrary
 
         public void SaveGrade(int studentId, int subjectId, DateTime date, int gradeValue)
         {
-            throw new NotImplementedException();
+            var existingGrade = _grades.FirstOrDefault(g =>
+            g.StudentId == studentId &&
+            g.SubjectId == subjectId &&
+            g.GradeDate.Date == date.Date);
+
+            if (existingGrade != null)
+            {
+                existingGrade.GradeValue = gradeValue;
+            }
+            else
+            {
+                _grades.Add(new Grade
+                {
+                    StudentId = studentId,
+                    SubjectId = subjectId,
+                    GradeDate = date,
+                    GradeValue = gradeValue
+                });
+            }
         }
     }
 }
