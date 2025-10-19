@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Grade.cs" />
     <Compile Include="GradeJournal.cs" />
+    <Compile Include="GradesRepository.cs" />
+    <Compile Include="IGradesRepository.cs" />
     <Compile Include="Student.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Subject.cs" />
