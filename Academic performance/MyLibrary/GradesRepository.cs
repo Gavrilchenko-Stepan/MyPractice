@@ -66,6 +66,30 @@ namespace MyLibrary
                new DateTime(2025, 4, 6),
                new DateTime(2025, 4, 13)
             };
+
+            // Тестовые оценки для всех групп
+            var random = new Random();
+            int[] possibleGrades = { 2, 3, 4, 5 };
+
+            foreach (var student in _students)
+            {
+                foreach (var date in dates)
+                {
+                    // 70% chance to have a grade
+                    if (random.Next(0, 10) < 7)
+                    {
+                        int grade = possibleGrades[random.Next(0, possibleGrades.Length)];
+
+                        _grades.Add(new Grade
+                        {
+                            StudentId = student.Id,
+                            SubjectId = 1, // Высшая математика по умолчанию
+                            GradeValue = grade,
+                            GradeDate = date
+                        });
+                    }
+                }
+            }
         }
 
         public List<DateTime> GetGradeDates(int subjectId, string groupName)

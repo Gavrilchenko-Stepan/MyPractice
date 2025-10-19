@@ -30,12 +30,12 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.comboBoxGroups = new System.Windows.Forms.ComboBox();
-            this.comboBoxSubjects = new System.Windows.Forms.ComboBox();
-            this.buttonAddDate = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
+            this.buttonAddDate = new System.Windows.Forms.Button();
+            this.comboBoxSubjects = new System.Windows.Forms.ComboBox();
+            this.comboBoxGroups = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.dataGridViewJournal = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).BeginInit();
@@ -54,14 +54,43 @@
             this.panel1.Size = new System.Drawing.Size(510, 86);
             this.panel1.TabIndex = 0;
             // 
-            // label1
+            // buttonSave
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Группа";
+            this.buttonSave.Location = new System.Drawing.Point(181, 51);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(75, 23);
+            this.buttonSave.TabIndex = 5;
+            this.buttonSave.Text = "Сохранить";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            // 
+            // buttonAddDate
+            // 
+            this.buttonAddDate.Location = new System.Drawing.Point(25, 51);
+            this.buttonAddDate.Name = "buttonAddDate";
+            this.buttonAddDate.Size = new System.Drawing.Size(108, 23);
+            this.buttonAddDate.TabIndex = 4;
+            this.buttonAddDate.Text = "Добавить дату";
+            this.buttonAddDate.UseVisualStyleBackColor = true;
+            this.buttonAddDate.Click += new System.EventHandler(this.buttonAddDate_Click);
+            // 
+            // comboBoxSubjects
+            // 
+            this.comboBoxSubjects.FormattingEnabled = true;
+            this.comboBoxSubjects.Location = new System.Drawing.Point(371, 11);
+            this.comboBoxSubjects.Name = "comboBoxSubjects";
+            this.comboBoxSubjects.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxSubjects.TabIndex = 3;
+            this.comboBoxSubjects.SelectedIndexChanged += new System.EventHandler(this.comboBoxSubjects_SelectedIndexChanged);
+            // 
+            // comboBoxGroups
+            // 
+            this.comboBoxGroups.FormattingEnabled = true;
+            this.comboBoxGroups.Location = new System.Drawing.Point(70, 11);
+            this.comboBoxGroups.Name = "comboBoxGroups";
+            this.comboBoxGroups.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxGroups.TabIndex = 2;
+            this.comboBoxGroups.SelectedIndexChanged += new System.EventHandler(this.comboBoxGroups_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -72,39 +101,14 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "Дисциплина";
             // 
-            // comboBoxGroups
+            // label1
             // 
-            this.comboBoxGroups.FormattingEnabled = true;
-            this.comboBoxGroups.Location = new System.Drawing.Point(70, 11);
-            this.comboBoxGroups.Name = "comboBoxGroups";
-            this.comboBoxGroups.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxGroups.TabIndex = 2;
-            // 
-            // comboBoxSubjects
-            // 
-            this.comboBoxSubjects.FormattingEnabled = true;
-            this.comboBoxSubjects.Location = new System.Drawing.Point(371, 11);
-            this.comboBoxSubjects.Name = "comboBoxSubjects";
-            this.comboBoxSubjects.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxSubjects.TabIndex = 3;
-            // 
-            // buttonAddDate
-            // 
-            this.buttonAddDate.Location = new System.Drawing.Point(25, 51);
-            this.buttonAddDate.Name = "buttonAddDate";
-            this.buttonAddDate.Size = new System.Drawing.Size(108, 23);
-            this.buttonAddDate.TabIndex = 4;
-            this.buttonAddDate.Text = "Добавить дату";
-            this.buttonAddDate.UseVisualStyleBackColor = true;
-            // 
-            // buttonSave
-            // 
-            this.buttonSave.Location = new System.Drawing.Point(181, 51);
-            this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(75, 23);
-            this.buttonSave.TabIndex = 5;
-            this.buttonSave.Text = "Сохранить";
-            this.buttonSave.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(22, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(42, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Группа";
             // 
             // dataGridViewJournal
             // 
@@ -124,15 +128,16 @@
             this.dataGridViewJournal.Name = "dataGridViewJournal";
             this.dataGridViewJournal.Size = new System.Drawing.Size(1013, 557);
             this.dataGridViewJournal.TabIndex = 1;
+            this.dataGridViewJournal.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewJournal_CellDoubleClick);
             // 
-            // Form1
+            // JournalForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1013, 661);
             this.Controls.Add(this.dataGridViewJournal);
             this.Controls.Add(this.panel1);
-            this.Name = "Form1";
+            this.Name = "JournalForm";
             this.Text = "Журнал оценок";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
