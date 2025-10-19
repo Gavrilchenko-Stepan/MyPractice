@@ -35,22 +35,22 @@ namespace MyLibrary
             _students = new List<Student>
             {
                // Группа 1
-               new Student { Id = 1, Name = "Абрамов Евгений Вадимович", Group = "Группа 1" },
-               new Student { Id = 2, Name = "Борисенко Валерия Дмитриевна", Group = "Группа 1" },
-               new Student { Id = 3, Name = "Гавриленко Антон Викторович", Group = "Группа 1" },
-               new Student { Id = 4, Name = "Германова Анастасия Владимировна", Group = "Группа 1" },
+               new Student { Id = 1, Name = "Абрамов Е.Г.", Group = "Группа 1" },
+               new Student { Id = 2, Name = "Борисенко В.Д.", Group = "Группа 1" },
+               new Student { Id = 3, Name = "Гавриленко А.В.", Group = "Группа 1" },
+               new Student { Id = 4, Name = "Германова А.В.", Group = "Группа 1" },
             
                // Группа 2
-               new Student { Id = 5, Name = "Зотов Иван Сергеевич", Group = "Группа 2" },
-               new Student { Id = 6, Name = "Казаков Алексей Андреевич", Group = "Группа 2" },
-               new Student { Id = 7, Name = "Камалетдинова Эльвира Радиковна", Group = "Группа 2" },
-               new Student { Id = 8, Name = "Картавенкова Анастасия Михайловна", Group = "Группа 2" },
+               new Student { Id = 5, Name = "Зотов И.С.", Group = "Группа 2" },
+               new Student { Id = 6, Name = "Казаков А.А.", Group = "Группа 2" },
+               new Student { Id = 7, Name = "Камалетдинова Э.Р.", Group = "Группа 2" },
+               new Student { Id = 8, Name = "Картавенкова А.М.", Group = "Группа 2" },
             
                // Группа 3
-               new Student { Id = 9, Name = "Новикова Алина Владимировна", Group = "Группа 3" },
-               new Student { Id = 10, Name = "Пиманова Светлана Сергеевна", Group = "Группа 3" },
-               new Student { Id = 11, Name = "Сергеева Александра Петровна", Group = "Группа 3" },
-               new Student { Id = 12, Name = "Сташковский Артемий Олегович", Group = "Группа 3" }
+               new Student { Id = 9, Name = "Новикова А.В.", Group = "Группа 3" },
+               new Student { Id = 10, Name = "Пиманова С.С.", Group = "Группа 3" },
+               new Student { Id = 11, Name = "Сергеева А.П.", Group = "Группа 3" },
+               new Student { Id = 12, Name = "Сташковский А.О.", Group = "Группа 3" }
             };
 
             // Даты занятий
