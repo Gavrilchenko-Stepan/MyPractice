@@ -126,7 +126,10 @@ namespace MyLibrary
 
         public List<Student> GetStudentsByGroup(string groupName)
         {
-            throw new NotImplementedException();
+            return _students
+            .Where(s => s.Group == groupName)
+            .OrderBy(s => s.Name)
+            .ToList();
         }
 
         public List<Subject> GetSubjects()
