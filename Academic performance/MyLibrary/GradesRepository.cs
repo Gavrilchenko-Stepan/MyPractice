@@ -75,7 +75,7 @@ namespace MyLibrary
             {
                 foreach (var date in dates)
                 {
-                    // 70% chance to have a grade
+                    // 70% на то что появится оценка
                     if (random.Next(0, 10) < 7)
                     {
                         int grade = possibleGrades[random.Next(0, possibleGrades.Length)];
@@ -83,7 +83,7 @@ namespace MyLibrary
                         _grades.Add(new Grade
                         {
                             StudentId = student.Id,
-                            SubjectId = 1, // Высшая математика по умолчанию
+                            SubjectId = 1,
                             GradeValue = grade,
                             GradeDate = date
                         });
