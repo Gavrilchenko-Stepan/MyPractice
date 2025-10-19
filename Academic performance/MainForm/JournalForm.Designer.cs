@@ -49,9 +49,10 @@
             this.panel1.Controls.Add(this.comboBoxGroups);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(510, 86);
+            this.panel1.Size = new System.Drawing.Size(1013, 86);
             this.panel1.TabIndex = 0;
             // 
             // buttonSave
@@ -123,10 +124,11 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewJournal.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridViewJournal.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataGridViewJournal.Location = new System.Drawing.Point(0, 104);
+            this.dataGridViewJournal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewJournal.Location = new System.Drawing.Point(0, 86);
             this.dataGridViewJournal.Name = "dataGridViewJournal";
-            this.dataGridViewJournal.Size = new System.Drawing.Size(1013, 557);
+            this.dataGridViewJournal.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.dataGridViewJournal.Size = new System.Drawing.Size(1013, 575);
             this.dataGridViewJournal.TabIndex = 1;
             this.dataGridViewJournal.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewJournal_CellDoubleClick);
             // 
