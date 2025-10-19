@@ -82,7 +82,36 @@ namespace MyLibrary
 
         public List<GradeJournal> GetGradeJournal(int subjectId, string groupName)
         {
-            throw new NotImplementedException();
+            var journal = new List<GradeJournal>();
+            var dates = GetGradeDates(subjectId, groupName);
+            var groupStudents = GetStudentsByGroup(groupName);
+
+            foreach (var student in groupStudents)
+            {
+                var studentGrades = _grades
+                    .Where(g => g.StudentId == student.Id && g.SubjectId == subjectId)
+                    .ToList();
+
+                var gradesByDate = dates.ToDictionary(
+                    date => date,
+                    date => studentGrades
+                        .FirstOrDefault(g => g.GradeDate.Date == date.Date)?.GradeValue
+                );
+
+                var validGrades = studentGrades.Select(g => g.GradeValue).ToList();
+                double average = validGrades.Any() ? validGrades.Average() : 0;
+
+                var gradeJournal = new GradeJournal
+                {
+                    Student = student,
+                    GradesByDate = gradesByDate,
+                    AverageGrade = average
+                };
+
+                journal.Add(gradeJournal);
+            }
+
+            return journal;
         }
 
         public List<string> GetGroups()
