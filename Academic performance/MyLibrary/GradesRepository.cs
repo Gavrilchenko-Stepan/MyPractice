@@ -116,12 +116,12 @@ namespace MyLibrary
 
         public List<string> GetGroups()
         {
-            throw new NotImplementedException();
+            return _groups;
         }
 
         public List<Student> GetStudents()
         {
-            throw new NotImplementedException();
+            return _students;
         }
 
         public List<Student> GetStudentsByGroup(string groupName)
@@ -131,7 +131,7 @@ namespace MyLibrary
 
         public List<Subject> GetSubjects()
         {
-            throw new NotImplementedException();
+            return _subjects;
         }
 
         public void SaveGrade(int studentId, int subjectId, DateTime date, int gradeValue)
