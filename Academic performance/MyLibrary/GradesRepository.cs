@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyLibrary
 {
-    public class GradesRepository
+    public class GradesRepository : IGradesRepository
     {
         private List<Grade> _grades = new List<Grade>();
         private List<Student> _students = new List<Student>();
@@ -26,46 +26,88 @@ namespace MyLibrary
             // Дисциплины
             _subjects = new List<Subject>
             {
-            new Subject { Id = 1, Name = "Высшая математика" },
-            new Subject { Id = 2, Name = "Физика" },
-            new Subject { Id = 3, Name = "Программирование" }
+               new Subject { Id = 1, Name = "Высшая математика" },
+               new Subject { Id = 2, Name = "Физика" },
+               new Subject { Id = 3, Name = "Программирование" }
             };
 
             // Студенты по группам
             _students = new List<Student>
             {
-            // Группа 1
-            new Student { Id = 1, Name = "Абрамов Евгений Вадимович", Group = "Группа 1" },
-            new Student { Id = 2, Name = "Борисенко Валерия Дмитриевна", Group = "Группа 1" },
-            new Student { Id = 3, Name = "Гавриленко Антон Викторович", Group = "Группа 1" },
-            new Student { Id = 4, Name = "Германова Анастасия Владимировна", Group = "Группа 1" },
+               // Группа 1
+               new Student { Id = 1, Name = "Абрамов Евгений Вадимович", Group = "Группа 1" },
+               new Student { Id = 2, Name = "Борисенко Валерия Дмитриевна", Group = "Группа 1" },
+               new Student { Id = 3, Name = "Гавриленко Антон Викторович", Group = "Группа 1" },
+               new Student { Id = 4, Name = "Германова Анастасия Владимировна", Group = "Группа 1" },
             
-            // Группа 2
-            new Student { Id = 5, Name = "Зотов Иван Сергеевич", Group = "Группа 2" },
-            new Student { Id = 6, Name = "Казаков Алексей Андреевич", Group = "Группа 2" },
-            new Student { Id = 7, Name = "Камалетдинова Эльвира Радиковна", Group = "Группа 2" },
-            new Student { Id = 8, Name = "Картавенкова Анастасия Михайловна", Group = "Группа 2" },
+               // Группа 2
+               new Student { Id = 5, Name = "Зотов Иван Сергеевич", Group = "Группа 2" },
+               new Student { Id = 6, Name = "Казаков Алексей Андреевич", Group = "Группа 2" },
+               new Student { Id = 7, Name = "Камалетдинова Эльвира Радиковна", Group = "Группа 2" },
+               new Student { Id = 8, Name = "Картавенкова Анастасия Михайловна", Group = "Группа 2" },
             
-            // Группа 3
-            new Student { Id = 9, Name = "Новикова Алина Владимировна", Group = "Группа 3" },
-            new Student { Id = 10, Name = "Пиманова Светлана Сергеевна", Group = "Группа 3" },
-            new Student { Id = 11, Name = "Сергеева Александра Петровна", Group = "Группа 3" },
-            new Student { Id = 12, Name = "Сташковский Артемий Олегович", Group = "Группа 3" }
+               // Группа 3
+               new Student { Id = 9, Name = "Новикова Алина Владимировна", Group = "Группа 3" },
+               new Student { Id = 10, Name = "Пиманова Светлана Сергеевна", Group = "Группа 3" },
+               new Student { Id = 11, Name = "Сергеева Александра Петровна", Group = "Группа 3" },
+               new Student { Id = 12, Name = "Сташковский Артемий Олегович", Group = "Группа 3" }
             };
 
             // Даты занятий
             var dates = new List<DateTime>
             {
-            new DateTime(2025, 2, 9),
-            new DateTime(2025, 2, 16),
-            new DateTime(2025, 3, 2),
-            new DateTime(2025, 3, 9),
-            new DateTime(2025, 3, 16),
-            new DateTime(2025, 3, 23),
-            new DateTime(2025, 3, 30),
-            new DateTime(2025, 4, 6),
-            new DateTime(2025, 4, 13)
+               new DateTime(2025, 2, 9),
+               new DateTime(2025, 2, 16),
+               new DateTime(2025, 3, 2),
+               new DateTime(2025, 3, 9),
+               new DateTime(2025, 3, 16),
+               new DateTime(2025, 3, 23),
+               new DateTime(2025, 3, 30),
+               new DateTime(2025, 4, 6),
+               new DateTime(2025, 4, 13)
             };
+        }
+
+        public List<DateTime> GetGradeDates(int subjectId, string groupName)
+        {
+            var groupStudentIds = GetStudentsByGroup(groupName).Select(s => s.Id).ToList();
+
+            return _grades
+                .Where(g => g.SubjectId == subjectId && groupStudentIds.Contains(g.StudentId))
+                .Select(g => g.GradeDate.Date)
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+        }
+
+        public List<GradeJournal> GetGradeJournal(int subjectId, string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetGroups()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Student> GetStudents()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Student> GetStudentsByGroup(string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Subject> GetSubjects()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveGrade(int studentId, int subjectId, DateTime date, int gradeValue)
+        {
+            throw new NotImplementedException();
         }
     }
 }
