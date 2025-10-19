@@ -68,7 +68,7 @@ namespace MyLibrary
             };
 
             // Тестовые оценки для всех групп
-            var random = new Random();
+            /*var random = new Random();
             int[] possibleGrades = { 2, 3, 4, 5 };
 
             foreach (var student in _students)
@@ -88,6 +88,33 @@ namespace MyLibrary
                             GradeDate = date
                         });
                     }
+                }
+            }*/
+        }
+
+        public void AddDateForGroup(int subjectId, string groupName, DateTime date)
+        {
+            var groupStudents = GetStudentsByGroup(groupName);
+
+            // Для каждого студента группы создаем пустую оценку на эту дату
+            foreach (var student in groupStudents)
+            {
+                // Проверяем, нет ли уже оценки на эту дату
+                var existingGrade = _grades.FirstOrDefault(g =>
+                    g.StudentId == student.Id &&
+                    g.SubjectId == subjectId &&
+                    g.GradeDate.Date == date.Date);
+
+                if (existingGrade == null)
+                {
+                    // Создаем "пустую" оценку (значение 0 будет интерпретироваться как отсутствие оценки)
+                    _grades.Add(new Grade
+                    {
+                        StudentId = student.Id,
+                        SubjectId = subjectId,
+                        GradeDate = date,
+                        GradeValue = 0 // 0 = нет оценки
+                    });
                 }
             }
         }

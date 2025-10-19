@@ -15,5 +15,6 @@ namespace MyLibrary
         List<DateTime> GetGradeDates(int subjectId, string groupName);
         List<GradeJournal> GetGradeJournal(int subjectId, string groupName);
         void SaveGrade(int studentId, int subjectId, DateTime date, int gradeValue);
+        void AddDateForGroup(int subjectId, string groupName, DateTime date);
     }
 }

@@ -12,9 +12,11 @@ namespace MainForm
 {
     public partial class AddDateForm : Form
     {
+        public DateTime SelectedDate { get; private set; }
         public AddDateForm()
         {
             InitializeComponent();
+            SelectedDate = DateTime.Now;
         }
     }
 }

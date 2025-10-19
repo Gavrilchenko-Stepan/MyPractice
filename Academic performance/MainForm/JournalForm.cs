@@ -218,7 +218,43 @@ namespace MainForm
 
         private void buttonAddDate_Click(object sender, EventArgs e)
         {
+            using (var form = new AddDateForm())
+    {
+        if (form.ShowDialog() == DialogResult.OK)
+        {
+            DateTime newDate = form.SelectedDate;
             
+            // Проверяем, нет ли уже такой даты
+            if (!_currentDates.Contains(newDate.Date))
+            {
+                try
+                {
+                    // Добавляем дату в репозиторий
+                    _gradesRepository.AddDateForGroup(_currentSubjectId, _currentGroup, newDate);
+                    
+                    // Обновляем локальную коллекцию дат
+                    _currentDates.Add(newDate.Date);
+                    _currentDates = _currentDates.OrderBy(d => d).ToList();
+                    
+                    // Перезагружаем данные
+                    LoadJournalData();
+                    
+                    MessageBox.Show($"Дата {newDate:dd.MM.yyyy} успешно добавлена!", "Успех", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при добавлении даты: {ex.Message}", "Ошибка", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Эта дата уже существует в журнале!", "Предупреждение", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+    }
         }
 
         private void dataGridViewJournal_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
