@@ -31,7 +31,10 @@ namespace MainForm
         private void InitializeComboBoxes()
         {
             // Заполнение групп
-            comboBoxGroups.DataSource = _gradesRepository.GetGroups();
+            var groups = _gradesRepository.GetGroups();
+            groups.Insert(0, "Выберите группу");
+
+            comboBoxGroups.DataSource = groups;
 
             // Заполнение дисциплин
             comboBoxSubjects.DataSource = _gradesRepository.GetSubjects();
@@ -59,8 +62,14 @@ namespace MainForm
 
         private void LoadJournalData()
         {
-            if (comboBoxSubjects.SelectedValue == null || comboBoxGroups.SelectedItem == null)
+            if (comboBoxSubjects.SelectedValue == null ||
+        comboBoxGroups.SelectedItem == null ||
+        string.IsNullOrEmpty(comboBoxGroups.SelectedItem.ToString()))
+            {
+                dataGridViewJournal.DataSource = null;
+                dataGridViewJournal.Rows.Clear();
                 return;
+            }
 
             var selectedSubject = (Subject)comboBoxSubjects.SelectedItem;
             _currentSubjectId = selectedSubject.Id;
@@ -73,7 +82,6 @@ namespace MainForm
             FillDataGrid(journalData);
             ApplyFormatting();
 
-            // Обновляем заголовок формы
             this.Text = $"Журнал оценок - {_currentGroup} - {comboBoxSubjects.Text}";
         }
 
@@ -81,6 +89,11 @@ namespace MainForm
         {
             dataGridViewJournal.DataSource = null;
             dataGridViewJournal.Rows.Clear();
+
+            if (journalData == null || journalData.Count == 0)
+            {
+                return;
+            }
 
             // Используем DataTable для гарантированного создания всех колонок
             var dataTable = new DataTable();
