@@ -130,7 +130,6 @@
             this.dataGridViewJournal.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataGridViewJournal.Size = new System.Drawing.Size(1013, 575);
             this.dataGridViewJournal.TabIndex = 1;
-            this.dataGridViewJournal.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewJournal_CellDoubleClick);
             // 
             // JournalForm
             // 

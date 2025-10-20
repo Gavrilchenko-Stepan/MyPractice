@@ -68,7 +68,7 @@ namespace MyLibrary
             };
 
             // Тестовые оценки для всех групп
-            /*var random = new Random();
+            var random = new Random();
             int[] possibleGrades = { 2, 3, 4, 5 };
 
             foreach (var student in _students)
@@ -89,7 +89,7 @@ namespace MyLibrary
                         });
                     }
                 }
-            }*/
+            }
         }
 
         public void AddDateForGroup(int subjectId, string groupName, DateTime date)

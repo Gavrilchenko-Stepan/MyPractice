@@ -88,7 +88,7 @@ namespace MainForm
             // Колонки с датами
             foreach (var date in _currentDates)
             {
-                string columnName = GetDateColumnName(date); // "Date_20250209"
+                string columnName = GetDateColumnName(date);
                 dataTable.Columns.Add(columnName, typeof(string));
             }
 
@@ -218,83 +218,7 @@ namespace MainForm
 
         private void buttonAddDate_Click(object sender, EventArgs e)
         {
-            using (var form = new AddDateForm())
-    {
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            DateTime newDate = form.SelectedDate;
             
-            // Проверяем, нет ли уже такой даты
-            if (!_currentDates.Contains(newDate.Date))
-            {
-                try
-                {
-                    // Добавляем дату в репозиторий
-                    _gradesRepository.AddDateForGroup(_currentSubjectId, _currentGroup, newDate);
-                    
-                    // Обновляем локальную коллекцию дат
-                    _currentDates.Add(newDate.Date);
-                    _currentDates = _currentDates.OrderBy(d => d).ToList();
-                    
-                    // Перезагружаем данные
-                    LoadJournalData();
-                    
-                    MessageBox.Show($"Дата {newDate:dd.MM.yyyy} успешно добавлена!", "Успех", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка при добавлении даты: {ex.Message}", "Ошибка", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Эта дата уже существует в журнале!", "Предупреждение", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-    }
-        }
-
-        private void dataGridViewJournal_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-
-            var cell = dataGridViewJournal.Rows[e.RowIndex].Cells[e.ColumnIndex];
-
-            // Пропускаем колонку среднего балла
-            if (cell.OwningColumn.Name == "Average") return;
-
-            /*using (var editForm = new EditGradeForm(cell.Value?.ToString()))
-            {
-                if (editForm.ShowDialog() == DialogResult.OK)
-                {
-                    cell.Value = editForm.GradeValue;
-                    UpdateAverageForRow(e.RowIndex);
-                    ApplyCellFormatting(cell, editForm.GradeValue);
-                }
-            }*/
-        }
-
-        private void UpdateAverageForRow(int rowIndex)
-        {
-            var row = dataGridViewJournal.Rows[rowIndex];
-            var grades = new List<int>();
-
-            foreach (DataGridViewCell cell in row.Cells)
-            {
-                if (cell.OwningColumn.Name != "Average" && !string.IsNullOrEmpty(cell.Value?.ToString()))
-                {
-                    if (int.TryParse(cell.Value.ToString(), out int grade))
-                    {
-                        grades.Add(grade);
-                    }
-                }
-            }
-
-            double average = grades.Any() ? grades.Average() : 0;
-            row.Cells["Average"].Value = average > 0 ? average.ToString("F2") : "";
         }
 
         private void SaveAllGrades()
