@@ -8,5 +8,7 @@ namespace MyLibrary
 {
     public interface  IUserRepository
     {
+        User GetUserByLogin(string login);
+        bool ValidateUser(string login, string password);
     }
 }
