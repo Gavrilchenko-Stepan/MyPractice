@@ -39,5 +39,17 @@ namespace MainForm
                 }
             }
         }
+
+        private void toolStripButtonLogout_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("Вы уверены, что хотите выйти?", "Подтверждение выхода",
+                                       MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                _authService.Logout();
+                ShowLoginForm();
+            }
+        }
     }
 }
