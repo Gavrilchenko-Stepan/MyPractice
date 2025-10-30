@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 
 namespace JournalTests
 {
@@ -29,6 +30,30 @@ namespace JournalTests
             Assert.AreEqual(4, result.Grades.Count);
             Assert.AreEqual("Иванов Иван Иванович", result.Students[0].FullName);
             Assert.AreEqual(5, result.Grades[(1, new DateTime(2024, 1, 15))]);
+        }
+
+        // Тест 2: Загрузка журнала для несуществующей группы
+        [TestMethod]
+        public void GetJournalData_WithNonExistentGroup_ReturnsEmptyJournalData()
+        {
+            string groupName = "НЕСУЩЕСТВУЮЩАЯ-ГРУППА";
+            string subjectName = "Математика";
+
+            var expectedGrades = new List<(int StudentId, DateTime Date, int? Grade)>();
+
+            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            Assert.AreEqual("НЕСУЩЕСТВУЮЩАЯ-ГРУППА", result.GroupName);
+            Assert.AreEqual("Математика", result.SubjectName);
+            Assert.AreEqual(0, result.Students.Count);
+            Assert.AreEqual(0, result.LessonDates.Count);
+            Assert.AreEqual(0, result.Grades.Count);
+
+            // Проверяем что словарь оценок пустой
+            foreach (var expected in expectedGrades)
+            {
+                Assert.IsFalse(result.Grades.ContainsKey((expected.StudentId, expected.Date)));
+            }
         }
     }
 }
