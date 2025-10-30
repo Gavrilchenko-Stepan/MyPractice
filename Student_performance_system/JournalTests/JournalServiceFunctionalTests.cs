@@ -1,0 +1,34 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+namespace JournalTests
+{
+    [TestClass]
+    public class JournalServiceFunctionalTests
+    {
+        private JournalService _journalService;
+        private IStudentRepository _studentRepository;
+        private IGradeRepository _gradeRepository;
+
+        // Тест 1: Успешная загрузка журнала оценок с корректными данными
+        [TestMethod] 
+        public void GetJournalData_WithValidGroupAndSubject_ReturnsCorrectJournalData()
+        {
+            // Arrange
+            string groupName = "П-10";
+            string subjectName = "Математика";
+
+            // Act
+            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            // Assert
+            Assert.AreEqual("П-10", result.GroupName);
+            Assert.AreEqual("Математика", result.SubjectName);
+            Assert.AreEqual(3, result.Students.Count);
+            Assert.AreEqual(2, result.LessonDates.Count);
+            Assert.AreEqual(4, result.Grades.Count);
+            Assert.AreEqual("Иванов Иван Иванович", result.Students[0].FullName);
+            Assert.AreEqual(5, result.Grades[(1, new DateTime(2024, 1, 15))]);
+        }
+    }
+}
