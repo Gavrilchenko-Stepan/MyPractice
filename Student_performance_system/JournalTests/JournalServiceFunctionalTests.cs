@@ -12,7 +12,7 @@ namespace JournalTests
         private IGradeRepository _gradeRepository;
 
         // Тест 1: Успешная загрузка журнала оценок с корректными данными
-        [TestMethod] 
+        [TestMethod]
         public void GetJournalData_WithValidGroupAndSubject_ReturnsCorrectJournalData()
         {
             // Arrange
@@ -85,25 +85,18 @@ namespace JournalTests
         [TestMethod]
         public void GetJournalData_WithLessonDatesButNoGrades_ReturnsStudentsWithDatesAndNoGrades()
         {
+            // Arrange
             string groupName = "Н-11";
             string subjectName = "Физика";
 
-            // Ожидаемые студенты
-            var expectedStudents = new List<(int StudentId, string FullName)>
+            // Ожидаемые данные: студенты, даты, но все оценки NULL
+            var expectedGrades = new List<(int StudentId, DateTime Date, int? Grade)>
             {
-                (6, "Николаев Дмитрий Александрович"),
-                (7, "Федорова Елена Игоревна")
+                (6, new DateTime(2024, 1, 10), null),  // Студент 6, дата 10.01, оценка NULL
+                (6, new DateTime(2024, 1, 17), null),  // Студент 6, дата 17.01, оценка NULL
+                (7, new DateTime(2024, 1, 10), null),  // Студент 7, дата 10.01, оценка NULL
+                (7, new DateTime(2024, 1, 17), null)   // Студент 7, дата 17.01, оценка NULL
             };
-
-            // Ожидаемые даты занятий (из записей с NULL оценками)
-            var expectedDates = new List<DateTime>
-            {
-                new DateTime(2024, 1, 10),
-                new DateTime(2024, 1, 17)
-            };
-
-            // Ожидаемые оценки - пустой список (NULL оценки не включаются в словарь)
-            var expectedGrades = new List<(int StudentId, DateTime Date, int? Grade)>();
 
             JournalData result = _journalService.GetJournalData(groupName, subjectName);
 
@@ -112,23 +105,23 @@ namespace JournalTests
             Assert.AreEqual("Физика", result.SubjectName);
 
             // Проверяем студентов
-            Assert.AreEqual(expectedStudents.Count, result.Students.Count);
-            Assert.AreEqual(expectedStudents[0].FullName, result.Students[0].FullName);
-            Assert.AreEqual(expectedStudents[1].FullName, result.Students[1].FullName);
+            Assert.AreEqual(2, result.Students.Count);
+            Assert.AreEqual("Николаев Дмитрий Александрович", result.Students[0].FullName);
+            Assert.AreEqual("Федорова Елена Игоревна", result.Students[1].FullName);
 
-            // Проверяем даты занятий (должны быть, даже если оценки NULL)
-            Assert.AreEqual(expectedDates.Count, result.LessonDates.Count);
-            foreach (var expectedDate in expectedDates)
-            {
-                CollectionAssert.Contains(result.LessonDates, expectedDate);
-            }
+            // Проверяем даты занятий
+            Assert.AreEqual(2, result.LessonDates.Count);
+            CollectionAssert.Contains(result.LessonDates, new DateTime(2024, 1, 10));
+            CollectionAssert.Contains(result.LessonDates, new DateTime(2024, 1, 17));
 
-            // Проверяем что словарь оценок пустой (NULL оценки не включены)
-            Assert.AreEqual(expectedGrades.Count, result.Grades.Count);
+            // Проверяем что ВСЕ ожидаемые комбинации студент-дата НЕ содержатся в словаре оценок
             foreach (var expected in expectedGrades)
             {
                 Assert.IsFalse(result.Grades.ContainsKey((expected.StudentId, expected.Date)));
             }
+
+            // Дополнительная проверка: убеждаемся что словарь оценок полностью пустой
+            Assert.AreEqual(0, result.Grades.Count);
         }
     }
 }
