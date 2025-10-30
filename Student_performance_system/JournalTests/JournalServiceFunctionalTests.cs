@@ -80,5 +80,55 @@ namespace JournalTests
                 Assert.IsFalse(result.Grades.ContainsKey((expected.StudentId, expected.Date)));
             }
         }
+
+        // Тест 4: Загрузка журнала при отсутствии оценок, но с проведенными занятиями
+        [TestMethod]
+        public void GetJournalData_WithLessonDatesButNoGrades_ReturnsStudentsWithDatesAndNoGrades()
+        {
+            string groupName = "Н-11";
+            string subjectName = "Физика";
+
+            // Ожидаемые студенты
+            var expectedStudents = new List<(int StudentId, string FullName)>
+            {
+                (6, "Николаев Дмитрий Александрович"),
+                (7, "Федорова Елена Игоревна")
+            };
+
+            // Ожидаемые даты занятий (из записей с NULL оценками)
+            var expectedDates = new List<DateTime>
+            {
+                new DateTime(2024, 1, 10),
+                new DateTime(2024, 1, 17)
+            };
+
+            // Ожидаемые оценки - пустой список (NULL оценки не включаются в словарь)
+            var expectedGrades = new List<(int StudentId, DateTime Date, int? Grade)>();
+
+            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            // Проверяем основные свойства
+            Assert.AreEqual("Н-11", result.GroupName);
+            Assert.AreEqual("Физика", result.SubjectName);
+
+            // Проверяем студентов
+            Assert.AreEqual(expectedStudents.Count, result.Students.Count);
+            Assert.AreEqual(expectedStudents[0].FullName, result.Students[0].FullName);
+            Assert.AreEqual(expectedStudents[1].FullName, result.Students[1].FullName);
+
+            // Проверяем даты занятий (должны быть, даже если оценки NULL)
+            Assert.AreEqual(expectedDates.Count, result.LessonDates.Count);
+            foreach (var expectedDate in expectedDates)
+            {
+                CollectionAssert.Contains(result.LessonDates, expectedDate);
+            }
+
+            // Проверяем что словарь оценок пустой (NULL оценки не включены)
+            Assert.AreEqual(expectedGrades.Count, result.Grades.Count);
+            foreach (var expected in expectedGrades)
+            {
+                Assert.IsFalse(result.Grades.ContainsKey((expected.StudentId, expected.Date)));
+            }
+        }
     }
 }
