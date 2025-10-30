@@ -15,19 +15,32 @@ namespace JournalTests
         [TestMethod]
         public void GetJournalData_WithValidGroupAndSubject_ReturnsCorrectJournalData()
         {
-            // Arrange
             string groupName = "П-10";
             string subjectName = "Математика";
 
-            // Act
+            var expectedGrades = new List<(int StudentId, DateTime Date, int? Grade)>
+            {
+                (1, new DateTime(2024, 1, 15), 5),
+                (1, new DateTime(2024, 1, 22), 4),
+                (2, new DateTime(2024, 1, 15), 4),
+                (3, new DateTime(2024, 1, 22), 3)
+            };
+
             JournalData result = _journalService.GetJournalData(groupName, subjectName);
 
-            // Assert
             Assert.AreEqual("П-10", result.GroupName);
             Assert.AreEqual("Математика", result.SubjectName);
             Assert.AreEqual(3, result.Students.Count);
             Assert.AreEqual(2, result.LessonDates.Count);
-            Assert.AreEqual(4, result.Grades.Count);
+
+            // Проверяем все ожидаемые оценки
+            foreach (var expected in expectedGrades)
+            {
+                Assert.IsTrue(result.Grades.ContainsKey((expected.StudentId, expected.Date)));
+                Assert.AreEqual(expected.Grade, result.Grades[(expected.StudentId, expected.Date)]);
+            }
+
+            // Проверяем конкретные значения
             Assert.AreEqual("Иванов Иван Иванович", result.Students[0].FullName);
             Assert.AreEqual(5, result.Grades[(1, new DateTime(2024, 1, 15))]);
         }
