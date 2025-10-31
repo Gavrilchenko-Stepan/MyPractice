@@ -69,6 +69,34 @@ namespace Tests
             AssertJournalData(result, exp);
         }
 
+        /// Тест 3: Загрузка журнала для несуществующего предмета
+        [TestMethod]
+        public void GetJournalData_WithNonExistentSubject_ReturnsStudentsWithoutGrades()
+        {
+            string groupName = "П-20";
+            string subjectName = "Несуществующий предмет";
+
+            List<Row> exp = new List<Row>
+            {
+                new Row
+                {
+                    Student = new Student { StudentId = 4, FullName = "Кузнецов Алексей Викторович", GroupName = "П-20" },
+                    Grades = new List<(DateTime, int?)>()
+                },
+                new Row
+                {
+                    Student = new Student { StudentId = 5, FullName = "Смирнова Ольга Дмитриевна", GroupName = "П-20" },
+                    Grades = new List<(DateTime, int?)>()
+                }
+            };
+
+            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            Assert.AreEqual("П-20", result.GroupName);
+            Assert.AreEqual("Несуществующий предмет", result.SubjectName);
+            AssertJournalData(result, exp);
+        }
+
         private void AssertJournalData(JournalData actual, List<Row> expected)
         {
             // Проверяем основные свойства
