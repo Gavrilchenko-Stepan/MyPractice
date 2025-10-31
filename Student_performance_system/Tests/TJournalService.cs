@@ -53,6 +53,22 @@ namespace Tests
             AssertJournalData(result, exp);
         }
 
+        /// Тест 2: Загрузка журнала для несуществующей группы
+        [TestMethod]
+        public void GetJournalData_WithNonExistentGroup_ReturnsEmptyJournalData()
+        {
+            string groupName = "НЕСУЩЕСТВУЮЩАЯ-ГРУППА";
+            string subjectName = "Математика";
+
+            List<Row> exp = new List<Row>();
+
+           JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            Assert.AreEqual("НЕСУЩЕСТВУЮЩАЯ-ГРУППА", result.GroupName);
+            Assert.AreEqual("Математика", result.SubjectName);
+            AssertJournalData(result, exp);
+        }
+
         private void AssertJournalData(JournalData actual, List<Row> expected)
         {
             // Проверяем основные свойства
