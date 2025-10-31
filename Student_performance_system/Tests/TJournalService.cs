@@ -97,6 +97,42 @@ namespace Tests
             AssertJournalData(result, exp);
         }
 
+        /// Тест 4: Загрузка журнала при отсутствии оценок
+        [TestMethod]
+        public void GetJournalData_WithNoGrades_ReturnsStudentsWithDatesButNoGrades()
+        {
+            string groupName = "Н-11";
+            string subjectName = "Физика";
+
+            List<Row> exp = new List<Row>
+            {
+                new Row
+                {
+                    Student = new Student { StudentId = 6, FullName = "Николаев Дмитрий Александрович", GroupName = "Н-11" },
+                    Grades = new List<(DateTime, int?)>
+                    {
+                        (new DateTime(2024, 1, 15), null),
+                        (new DateTime(2024, 1, 22), null)
+                    }
+                },
+                new Row
+                {
+                    Student = new Student { StudentId = 7, FullName = "Федорова Елена Игоревна", GroupName = "Н-11" },
+                    Grades = new List<(DateTime, int?)>
+                    {
+                        (new DateTime(2024, 1, 15), null),
+                        (new DateTime(2024, 1, 22), null)
+                    }
+                }
+            };
+
+            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+
+            Assert.AreEqual("Н-11", result.GroupName);
+            Assert.AreEqual("Физика", result.SubjectName);
+            AssertJournalData(result, exp);
+        }
+
         private void AssertJournalData(JournalData actual, List<Row> expected)
         {
             // Проверяем основные свойства
