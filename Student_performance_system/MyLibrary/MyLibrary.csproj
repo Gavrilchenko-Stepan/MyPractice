@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthService.cs" />
+    <Compile Include="Grade.cs" />
     <Compile Include="IUserRepository.cs" />
     <Compile Include="JournalService.cs" />
     <Compile Include="RowData.cs" />
