@@ -8,157 +8,58 @@ namespace Tests
     [TestClass]
     public class TJournalService
     {
-        private JournalService _journalService;
-
-        /// Тест 1: Успешная загрузка журнала оценок с корректными данными
+        /// Тест 1 и 4: Загрузка журнала для разных сценариев с валидными данными
         [TestMethod]
-        public void GetJournalData_WithValidGroupAndSubject_ReturnsCorrectJournalData()
+        [DataRow("П-10", "Математика", new int[] { 1, 2, 3 }, new string[] { "Иванов Иван Иванович", "Петров Петр Петрович", "Сидорова Анна Сергеевна" },
+            new string[] { "П-10", "П-10", "П-10" },
+            new int[] { 5, 4, 3 },
+            new int[] { 4, 5, 3 })]
+        [DataRow("Н-11", "Физика", new int[] { 6, 7 }, new string[] { "Николаев Дмитрий Александрович", "Федорова Елена Игоревна" },
+            new string[] { "Н-11", "Н-11" },
+            new int[] { -1, -1 },
+            new int[] { -1, -1 })]
+        public void GetJournalData_WithValidData_ReturnsCorrectJournalData(
+            string groupName,
+            string subjectName,
+            int[] studentIds,
+            string[] fullNames,
+            string[] groupNames,
+            int?[] firstGrades,
+            int?[] secondGrades)
         {
-            string groupName = "П-10";
-            string subjectName = "Математика";
 
-            List<Row> exp = new List<Row>
+            JournalService journalService_ = new JournalService();
+
+            List<Row> expected = new List<Row>();
+            for (int i = 0; i < studentIds.Length; i++)
             {
-                new Row
+                // Конвертируем -1 в null
+                int? firstGrade = firstGrades[i] == -1 ? null : firstGrades[i];
+                int? secondGrade = secondGrades[i] == -1 ? null : secondGrades[i];
+
+                expected.Add(new Row
                 {
-                    Student = new Student { StudentId = 1, FullName = "Иванов Иван Иванович", GroupName = "П-10" },
+                    Student = new Student { StudentId = studentIds[i], FullName = fullNames[i], GroupName = groupNames[i] },
                     Grades = new List<(DateTime, int?)>
                     {
-                        (new DateTime(2024, 1, 15), 5),
-                        (new DateTime(2024, 1, 22), 4)
+                        (new DateTime(2024, 1, 15), firstGrades[i]),
+                        (new DateTime(2024, 1, 22), secondGrades[i])
                     }
-                },
-                new Row
-                {
-                    Student = new Student { StudentId = 2, FullName = "Петров Петр Петрович", GroupName = "П-10" },
-                    Grades = new List<(DateTime, int?)>
-                    {
-                        (new DateTime(2024, 1, 15), 4)
-                    }
-                },
-                new Row
-                {
-                    Student = new Student { StudentId = 3, FullName = "Сидорова Анна Сергеевна", GroupName = "П-10" },
-                    Grades = new List<(DateTime, int?)>
-                    {
-                        (new DateTime(2024, 1, 22), 3)
-                    }
-                }
-            };
+                });
+            }
 
-            JournalData result = _journalService.GetJournalData(groupName, subjectName);
+            JournalData result = journalService_.GetJournalData(groupName, subjectName);
 
-            Assert.AreEqual("П-10", result.GroupName);
-            Assert.AreEqual("Математика", result.SubjectName);
-            AssertJournalData(result, exp);
-        }
-
-        /// Тест 2: Загрузка журнала для несуществующей группы
-        [TestMethod]
-        public void GetJournalData_WithNonExistentGroup_ReturnsEmptyJournalData()
-        {
-            string groupName = "НЕСУЩЕСТВУЮЩАЯ-ГРУППА";
-            string subjectName = "Математика";
-
-            List<Row> exp = new List<Row>();
-
-           JournalData result = _journalService.GetJournalData(groupName, subjectName);
-
-            Assert.AreEqual("НЕСУЩЕСТВУЮЩАЯ-ГРУППА", result.GroupName);
-            Assert.AreEqual("Математика", result.SubjectName);
-            AssertJournalData(result, exp);
-        }
-
-        /// Тест 3: Загрузка журнала для несуществующего предмета
-        [TestMethod]
-        public void GetJournalData_WithNonExistentSubject_ReturnsStudentsWithoutGrades()
-        {
-            string groupName = "П-20";
-            string subjectName = "Несуществующий предмет";
-
-            List<Row> exp = new List<Row>
-            {
-                new Row
-                {
-                    Student = new Student { StudentId = 4, FullName = "Кузнецов Алексей Викторович", GroupName = "П-20" },
-                    Grades = new List<(DateTime, int?)>()
-                },
-                new Row
-                {
-                    Student = new Student { StudentId = 5, FullName = "Смирнова Ольга Дмитриевна", GroupName = "П-20" },
-                    Grades = new List<(DateTime, int?)>()
-                }
-            };
-
-            JournalData result = _journalService.GetJournalData(groupName, subjectName);
-
-            Assert.AreEqual("П-20", result.GroupName);
-            Assert.AreEqual("Несуществующий предмет", result.SubjectName);
-            AssertJournalData(result, exp);
-        }
-
-        /// Тест 4: Загрузка журнала при отсутствии оценок
-        [TestMethod]
-        public void GetJournalData_WithNoGrades_ReturnsStudentsWithDatesButNoGrades()
-        {
-            string groupName = "Н-11";
-            string subjectName = "Физика";
-
-            List<Row> exp = new List<Row>
-            {
-                new Row
-                {
-                    Student = new Student { StudentId = 6, FullName = "Николаев Дмитрий Александрович", GroupName = "Н-11" },
-                    Grades = new List<(DateTime, int?)>
-                    {
-                        (new DateTime(2024, 1, 15), null),
-                        (new DateTime(2024, 1, 22), null)
-                    }
-                },
-                new Row
-                {
-                    Student = new Student { StudentId = 7, FullName = "Федорова Елена Игоревна", GroupName = "Н-11" },
-                    Grades = new List<(DateTime, int?)>
-                    {
-                        (new DateTime(2024, 1, 15), null),
-                        (new DateTime(2024, 1, 22), null)
-                    }
-                }
-            };
-
-            JournalData result = _journalService.GetJournalData(groupName, subjectName);
-
-            Assert.AreEqual("Н-11", result.GroupName);
-            Assert.AreEqual("Физика", result.SubjectName);
-            AssertJournalData(result, exp);
-        }
-
-        private void AssertJournalData(JournalData actual, List<Row> expected)
-        {
-            // Проверяем основные свойства
-            Assert.AreEqual(expected.Count, actual.Data.Count);
+            Assert.AreEqual(groupName, result.GroupName);
+            Assert.AreEqual(subjectName, result.SubjectName);
+            Assert.AreEqual(expected.Count, result.Data.Count);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                var expectedRow = expected[i];
-                var actualRow = actual.Data[i];
-
-                // Проверяем студента
-                Assert.AreEqual(expectedRow.Student.StudentId, actualRow.Student.StudentId);
-                Assert.AreEqual(expectedRow.Student.FullName, actualRow.Student.FullName);
-                Assert.AreEqual(expectedRow.Student.GroupName, actualRow.Student.GroupName);
-
-                // Проверяем оценки
-                Assert.AreEqual(expectedRow.Grades.Count, actualRow.Grades.Count);
-
-                for (int j = 0; j < expectedRow.Grades.Count; j++)
-                {
-                    var (expectedDate, expectedGrade) = expectedRow.Grades[j];
-                    var (actualDate, actualGrade) = actualRow.Grades[j];
-
-                    Assert.AreEqual(expectedDate, actualDate);
-                    Assert.AreEqual(expectedGrade, actualGrade);
-                }
+                Assert.AreEqual(expected[i].Student.StudentId, result.Data[i].Student.StudentId);
+                Assert.AreEqual(expected[i].Student.FullName, result.Data[i].Student.FullName);
+                Assert.AreEqual(expected[i].Student.GroupName, result.Data[i].Student.GroupName);
+                CollectionAssert.AreEqual(expected[i].Grades, result.Data[i].Grades);
             }
         }
     }
