@@ -17,5 +17,18 @@ namespace MyLibrary.Presenter
             _view = view;
             _journalService = journalService;
         }
+
+        public void LoadJournal()
+        {
+            try
+            {
+                var journalData = _journalService.GetJournalData(_view.GroupName, _view.SubjectName);
+                _view.DisplayJournal(journalData);
+            }
+            catch (Exception ex)
+            {
+                _view.ShowErrorMessage($"Не удалось загрузить журнал: {ex.Message}");
+            }
+        }
     }
 }
