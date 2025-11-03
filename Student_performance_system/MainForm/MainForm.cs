@@ -1,4 +1,6 @@
 ﻿using MyLibrary;
+using MyLibrary.Presenter;
+using MyLibrary.Repositories;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +16,10 @@ namespace MainForm
     public partial class MainForm : Form
     {
         private AuthService _authService;
+        private JournalPresenter _presenter;
+
+        public string GroupName => AppConfig.DefaultGroup;
+        public string SubjectName => AppConfig.DefaultSubject;
 
         public MainForm()
         {
@@ -26,6 +32,15 @@ namespace MainForm
         {
             IUserRepository userRepository = new UserRepository();
             _authService = new AuthService(userRepository);
+            var studentRepository = new MySqlStudentRepository(AppConfig.ConnectionString);
+            var gradeRepository = new MySqlGradeRepository(AppConfig.ConnectionString);
+            var journalService = new JournalService(studentRepository, gradeRepository);
+            _presenter = new JournalPresenter(this, journalService);
+        }
+
+        private void LoadJournalAutomatically()
+        {
+            _presenter.LoadJournal();
         }
 
         private void ShowLoginForm()
