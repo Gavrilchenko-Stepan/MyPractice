@@ -8,6 +8,7 @@ namespace MyLibrary
 {
     public class Grade
     {
+        public int StudentId { get; set; }
         public DateTime LessonDate { get; set; }
         public int GradeValue { get; set; }
     }

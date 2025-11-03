@@ -46,6 +46,7 @@ namespace MyLibrary.Repositories
                         {
                             grades.Add(new Grade
                             {
+                                StudentId = reader.GetInt32(0),
                                 LessonDate = reader.GetDateTime("lesson_date"),
                                 GradeValue = reader.GetInt32("grade_value")
                             });

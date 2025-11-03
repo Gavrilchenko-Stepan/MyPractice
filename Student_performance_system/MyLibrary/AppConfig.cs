@@ -13,11 +13,20 @@ namespace MyLibrary
         {
             get
             {
-                var connectionString = ConfigurationManager.ConnectionStrings["MySqlConnection"];
-                if (connectionString == null)
-                    throw new Exception("Не найдена строка подключения 'MySqlConnection' в App.config");
+                try
+                {
+                    // Пробуем получить из App.config
+                    var connectionString = ConfigurationManager.ConnectionStrings["MySqlConnection"];
+                    if (connectionString != null)
+                        return connectionString.ConnectionString;
+                }
+                catch
+                {
+                    // Если не получилось, используем прямое подключение
+                }
 
-                return connectionString.ConnectionString;
+                // Прямая строка подключения (настройте под вашу БД)
+                return "Server=localhost;Database=university_journal;Uid=root;Pwd=vertrigo;Port=3306;";
             }
         }
 

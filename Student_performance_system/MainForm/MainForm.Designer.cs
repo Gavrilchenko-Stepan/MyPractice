@@ -31,12 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButtonLogout = new System.Windows.Forms.ToolStripButton();
-            this.lblInfo = new System.Windows.Forms.Label();
             this.dataGridViewJournal = new System.Windows.Forms.DataGridView();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).BeginInit();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -60,15 +57,6 @@
             this.toolStripButtonLogout.Text = "Выход";
             this.toolStripButtonLogout.Click += new System.EventHandler(this.toolStripButtonLogout_Click);
             // 
-            // lblInfo
-            // 
-            this.lblInfo.AutoSize = true;
-            this.lblInfo.Location = new System.Drawing.Point(12, 18);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(244, 13);
-            this.lblInfo.TabIndex = 1;
-            this.lblInfo.Text = "Группа: {GroupName} | Предмет: {SubjectName}";
-            // 
             // dataGridViewJournal
             // 
             this.dataGridViewJournal.AllowUserToAddRows = false;
@@ -83,22 +71,12 @@
             this.dataGridViewJournal.Size = new System.Drawing.Size(1184, 536);
             this.dataGridViewJournal.TabIndex = 2;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.lblInfo);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1184, 47);
-            this.panel1.TabIndex = 3;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1184, 561);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGridViewJournal);
             this.Controls.Add(this.toolStrip1);
             this.Location = new System.Drawing.Point(10, 15);
@@ -108,8 +86,6 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -119,9 +95,7 @@
 
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButtonLogout;
-        private System.Windows.Forms.Label lblInfo;
         private System.Windows.Forms.DataGridView dataGridViewJournal;
-        private System.Windows.Forms.Panel panel1;
     }
 }
 

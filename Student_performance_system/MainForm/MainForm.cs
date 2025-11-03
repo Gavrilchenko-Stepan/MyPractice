@@ -2,6 +2,7 @@
 using MyLibrary.DataModel.JournalData;
 using MyLibrary.Presenter;
 using MyLibrary.Repositories;
+using MyLibrary.View;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 namespace MainForm
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IJournalView
     {
         private AuthService _authService;
         private JournalPresenter _presenter;
@@ -34,10 +35,25 @@ namespace MainForm
         {
             IUserRepository userRepository = new UserRepository();
             _authService = new AuthService(userRepository);
-            var studentRepository = new MySqlStudentRepository(AppConfig.ConnectionString);
-            var gradeRepository = new MySqlGradeRepository(AppConfig.ConnectionString);
-            var journalService = new JournalService(studentRepository, gradeRepository);
-            _presenter = new JournalPresenter((MyLibrary.View.IJournalView)this, journalService);
+
+            InitializeRepositoriesAndPresenter();
+        }
+
+        private void InitializeRepositoriesAndPresenter()
+        {
+            try
+            {
+                var studentRepository = new MySqlStudentRepository(AppConfig.ConnectionString);
+                var gradeRepository = new MySqlGradeRepository(AppConfig.ConnectionString);
+                var journalService = new JournalService(studentRepository, gradeRepository);
+
+                // Передаем this как IJournalView
+                _presenter = new JournalPresenter(this, journalService);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка инициализации: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadJournalAutomatically()
@@ -71,7 +87,8 @@ namespace MainForm
 
                 // Получаем все уникальные даты
                 var allDates = journalData.Rows
-                    .SelectMany(r => r.Grades.Select(g => g.LessonDate))
+                    .SelectMany(r => r.Grades)
+                    .Select(g => g.LessonDate)
                     .Distinct()
                     .OrderBy(d => d)
                     .ToList();
@@ -91,14 +108,26 @@ namespace MainForm
                     dataGridViewJournal.Rows[rowIndex].Cells["Student"].Value = rowData.Student.FullName;
 
                     // Заполняем оценки по датам
-                    foreach (var grade in rowData.Grades)
+                    foreach (var date in allDates)
                     {
-                        var dateColumnName = grade.LessonDate.ToString("dd.MM.yyyy");
+                        var dateColumnName = date.ToString("dd.MM.yyyy");
                         var cell = dataGridViewJournal.Rows[rowIndex].Cells[dateColumnName];
-                        cell.Value = grade.GradeValue.ToString();
-                        cell.Style.BackColor = GetGradeColor(grade.GradeValue);
-                        cell.Style.ForeColor = Color.Black;
-                        cell.Style.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+                        
+                        var grade = rowData.Grades.FirstOrDefault(g =>
+                    g.LessonDate.ToString("dd.MM.yyyy") == dateColumnName);
+
+                        if (grade != null)
+                        {
+                            cell.Value = grade.GradeValue.ToString();
+                            cell.Style.BackColor = GetGradeColor(grade.GradeValue);
+                            cell.Style.ForeColor = Color.Black;
+                            cell.Style.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+                        }
+                        else
+                        {
+                            cell.Value = ""; // Пусто если нет оценки
+                            cell.Style.BackColor = Color.White;
+                        }
                     }
                 }
 
