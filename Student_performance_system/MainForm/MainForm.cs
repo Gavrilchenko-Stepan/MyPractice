@@ -80,6 +80,9 @@ namespace MainForm
                     return;
                 }
 
+                dataGridViewJournal.Columns.Add("Number", "№");
+                dataGridViewJournal.Columns["Number"].Width = 30;
+
                 // Колонка "Студент"
                 dataGridViewJournal.Columns.Add("Student", "Студент");
                 dataGridViewJournal.Columns["Student"].Frozen = true;
@@ -96,25 +99,33 @@ namespace MainForm
                 // Создаем колонки для каждой даты
                 foreach (var date in allDates)
                 {
-                    var columnName = date.ToString("dd.MM.yyyy");
+                    var columnName = date.ToString("dd.MM.");
                     dataGridViewJournal.Columns.Add(columnName, columnName);
                     dataGridViewJournal.Columns[columnName].Width = 80;
+                    dataGridViewJournal.Columns[columnName].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
 
+                dataGridViewJournal.Columns.Add("Average", "Средний балл");
+                dataGridViewJournal.Columns["Average"].Width = 100;
+                dataGridViewJournal.Columns["Average"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
                 // Заполняем данные
-                foreach (var rowData in journalData.Rows)
+                for (int i = 0; i < journalData.Rows.Count; i++)
                 {
+                    var rowData = journalData.Rows[i];
                     var rowIndex = dataGridViewJournal.Rows.Add();
+
+                    dataGridViewJournal.Rows[rowIndex].Cells["Number"].Value = i + 1;
                     dataGridViewJournal.Rows[rowIndex].Cells["Student"].Value = rowData.Student.FullName;
 
                     // Заполняем оценки по датам
                     foreach (var date in allDates)
                     {
-                        var dateColumnName = date.ToString("dd.MM.yyyy");
+                        var dateColumnName = date.ToString("dd.MM.");
                         var cell = dataGridViewJournal.Rows[rowIndex].Cells[dateColumnName];
                         
                         var grade = rowData.Grades.FirstOrDefault(g =>
-                    g.LessonDate.ToString("dd.MM.yyyy") == dateColumnName);
+                    g.LessonDate.ToString("dd.MM.") == dateColumnName);
 
                         if (grade != null)
                         {
