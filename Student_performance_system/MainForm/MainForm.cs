@@ -26,6 +26,7 @@ namespace MainForm
             InitializeComponent();
             InitializeServices();
             ShowLoginForm();
+            Shown += (s, e) => LoadJournalAutomatically();
         }
 
         private void InitializeServices()
@@ -41,6 +42,11 @@ namespace MainForm
         private void LoadJournalAutomatically()
         {
             _presenter.LoadJournal();
+        }
+
+        public void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void ShowLoginForm()
