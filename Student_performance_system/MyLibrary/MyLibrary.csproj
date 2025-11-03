@@ -99,6 +99,7 @@
     <Compile Include="DataModel\RowData.cs" />
     <Compile Include="DataModel\Student\Student.cs" />
     <Compile Include="Model\Grade\IGradeRepository.cs" />
+    <Compile Include="Model\Grade\MySqlGradeRepository.cs" />
     <Compile Include="Model\Student\IStudentRepository.cs" />
     <Compile Include="Model\Student\MySqlStudentRepository.cs" />
     <Compile Include="Teacher.cs" />
