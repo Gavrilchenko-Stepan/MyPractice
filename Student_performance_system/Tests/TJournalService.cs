@@ -62,5 +62,20 @@ namespace Tests
                 CollectionAssert.AreEqual(expected[i].Grades, result.Data[i].Grades);
             }
         }
+
+        /// Тест 2 и 3: Загрузка журнала для несуществующих групп и предметов
+        [TestMethod]
+        [DataRow("НЕСУЩЕСТВУЮЩАЯ-ГРУППА", "Математика")]
+        [DataRow("П-20", "Несуществующий предмет")]
+        public void GetJournalData_WithInvalidRequests_ReturnsEmptyOrStudentsWithoutGrades(string groupName, string subjectName, int expectedStudentCount)
+        {
+            JournalService journalService_ = new JournalService();
+
+            JournalData result = journalService_.GetJournalData(groupName, subjectName);
+
+            Assert.AreEqual(groupName, result.GroupName);
+            Assert.AreEqual(subjectName, result.SubjectName);
+            Assert.AreEqual(expectedStudentCount, result.Data.Count);
+        }
     }
 }
