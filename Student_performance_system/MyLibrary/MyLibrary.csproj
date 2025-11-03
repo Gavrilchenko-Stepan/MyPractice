@@ -48,6 +48,7 @@
     <Compile Include="JournalService.cs" />
     <Compile Include="DataModel\RowData.cs" />
     <Compile Include="DataModel\Student\Student.cs" />
+    <Compile Include="Model\Grade\IGradeRepository.cs" />
     <Compile Include="Model\Student\IStudentRepository.cs" />
     <Compile Include="Teacher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
