@@ -106,10 +106,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserRepository.cs" />
+    <Compile Include="View\IJournalView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Presenter\" />
-    <Folder Include="View\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
