@@ -29,8 +29,8 @@ namespace MainForm
         {
             InitializeComponent();
 
-            _currentGroupName = AppConfig.DefaultGroup;
-            _currentSubjectName = AppConfig.DefaultSubject;
+            _currentGroupName = IniConfig.DefaultGroup;
+            _currentSubjectName = IniConfig.DefaultSubject;
 
             InitializeServices();
             ShowLoginForm();
@@ -49,8 +49,8 @@ namespace MainForm
         {
             try
             {
-                var studentRepository = new MySqlStudentRepository(AppConfig.ConnectionString);
-                var gradeRepository = new MySqlGradeRepository(AppConfig.ConnectionString);
+                var studentRepository = new MySqlStudentRepository(IniConfig.ConnectionString);
+                var gradeRepository = new MySqlGradeRepository(IniConfig.ConnectionString);
                 var journalService = new JournalService(studentRepository, gradeRepository);
 
                 // Передаем this как IJournalView
