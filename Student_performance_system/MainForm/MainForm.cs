@@ -19,13 +19,19 @@ namespace MainForm
     {
         private AuthService _authService;
         private JournalPresenter _presenter;
+        private string _currentGroupName;
+        private string _currentSubjectName;
 
-        public string GroupName => AppConfig.DefaultGroup;
-        public string SubjectName => AppConfig.DefaultSubject;
+        public string GroupName => _currentGroupName;
+        public string SubjectName => _currentSubjectName;
 
         public MainForm()
         {
             InitializeComponent();
+
+            _currentGroupName = AppConfig.DefaultGroup;
+            _currentSubjectName = AppConfig.DefaultSubject;
+
             InitializeServices();
             ShowLoginForm();
             Shown += (s, e) => LoadJournalAutomatically();
