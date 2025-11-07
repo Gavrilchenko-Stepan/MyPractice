@@ -71,7 +71,7 @@ namespace MainForm
         {
             try
             {
-                if (this.InvokeRequired)
+                if (this.InvokeRequired) /// гарантирует, что обновление DataGridView всегда происходит в правильном потоке
                 {
                     this.Invoke(new Action<JournalData>(DisplayJournal), journalData);
                     return;
