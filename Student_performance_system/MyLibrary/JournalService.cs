@@ -2,6 +2,7 @@
 using MyLibrary.Repositories;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace MyLibrary
                 {
                     GroupName = groupName,
                     SubjectName = subjectName,
-                    Rows = new List<RowData>()
+                    Rows = new BindingList<RowData>()
                 };
 
                 foreach (var student in students)

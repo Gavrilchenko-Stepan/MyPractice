@@ -11,5 +11,7 @@ namespace MyLibrary
     {
         public Student Student { get; set; }
         public List<Grade> Grades { get; set; }
+
+        public string StudentName => Student?.FullName;
     }
 }

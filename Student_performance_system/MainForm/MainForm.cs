@@ -67,6 +67,36 @@ namespace MainForm
             _presenter.LoadJournal();
         }
 
+        private void DataGridViewJournal_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 2) return; // Пропускаем заголовки, номер и студента
+
+            var rowData = dataGridViewJournal.Rows[e.RowIndex].DataBoundItem as RowData;
+            if (rowData == null) return;
+
+            // Получаем дату из заголовка колонки
+            var columnHeaderText = dataGridViewJournal.Columns[e.ColumnIndex].HeaderText;
+
+            // Ищем оценку для этой даты
+            var grade = rowData.Grades?.FirstOrDefault(g =>
+                g.LessonDate.ToString("dd.MM.") == columnHeaderText);
+
+            if (grade?.GradeValue.HasValue == true)
+            {
+                e.Value = grade.GradeValue.Value.ToString();
+                e.CellStyle.BackColor = GetGradeColor(grade.GradeValue.Value);
+                e.CellStyle.ForeColor = Color.Black;
+                e.CellStyle.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+            }
+            else
+            {
+                e.Value = "";
+                e.CellStyle.BackColor = Color.White;
+            }
+
+            e.FormattingApplied = true;
+        }
+
         public void DisplayJournal(JournalData journalData)
         {
             try
@@ -77,24 +107,27 @@ namespace MainForm
                     return;
                 }
 
+                dataGridViewJournal.DataSource = null;
                 dataGridViewJournal.Columns.Clear();
-                dataGridViewJournal.Rows.Clear();
 
-                if (journalData.Rows == null || journalData.Rows.Count == 0)
-                {
-                    ShowErrorMessage("Нет данных для отображения");
-                    return;
-                }
+                dataGridViewJournal.CellFormatting -= DataGridViewJournal_CellFormatting;
+                dataGridViewJournal.CellFormatting += DataGridViewJournal_CellFormatting;
 
                 dataGridViewJournal.Columns.Add("Number", "№");
-                dataGridViewJournal.Columns["Number"].Width = 30;
+                dataGridViewJournal.Columns["Number"].Width = 40;
 
-                // Колонка "Студент"
-                dataGridViewJournal.Columns.Add("Student", "Студент");
-                dataGridViewJournal.Columns["Student"].Frozen = true;
-                dataGridViewJournal.Columns["Student"].Width = 200;
+                // Колонка студента
+                dataGridViewJournal.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Student",
+                    HeaderText = "Студент",
+                    DataPropertyName = "StudentName",
+                    Frozen = true,
+                    Width = 200,
+                    ReadOnly = true
+                });
 
-                // Получаем все уникальные даты
+                // Получаем все даты
                 var allDates = journalData.Rows
                     .SelectMany(r => r.Grades)
                     .Select(g => g.LessonDate)
@@ -115,37 +148,11 @@ namespace MainForm
                 dataGridViewJournal.Columns["Average"].Width = 100;
                 dataGridViewJournal.Columns["Average"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                // Заполняем данные
-                for (int i = 0; i < journalData.Rows.Count; i++)
+                dataGridViewJournal.DataSource = journalData.Rows;
+
+                for (int i = 0; i < dataGridViewJournal.Rows.Count; i++)
                 {
-                    var rowData = journalData.Rows[i];
-                    var rowIndex = dataGridViewJournal.Rows.Add();
-
-                    dataGridViewJournal.Rows[rowIndex].Cells["Number"].Value = i + 1;
-                    dataGridViewJournal.Rows[rowIndex].Cells["Student"].Value = rowData.Student.FullName;
-
-                    // Заполняем оценки по датам
-                    foreach (var date in allDates)
-                    {
-                        var dateColumnName = date.ToString("dd.MM.");
-                        var cell = dataGridViewJournal.Rows[rowIndex].Cells[dateColumnName];
-                        
-                        var grade = rowData.Grades.FirstOrDefault(g =>
-                    g.LessonDate.ToString("dd.MM.") == dateColumnName);
-
-                        if (grade != null)
-                        {
-                            cell.Value = grade.GradeValue.ToString();
-                            cell.Style.BackColor = GetGradeColor(grade.GradeValue.Value);
-                            cell.Style.ForeColor = Color.Black;
-                            cell.Style.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
-                        }
-                        else
-                        {
-                            cell.Value = ""; // Пусто если нет оценки
-                            cell.Style.BackColor = Color.White;
-                        }
-                    }
+                    dataGridViewJournal.Rows[i].Cells["Number"].Value = (i + 1).ToString();
                 }
 
                 this.Text = $"Журнал оценок - {journalData.GroupName} - {journalData.SubjectName}";
