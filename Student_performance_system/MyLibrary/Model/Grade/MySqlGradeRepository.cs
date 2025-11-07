@@ -57,39 +57,5 @@ namespace MyLibrary.Repositories
 
             return grades;
         }
-
-        public List<DateTime> GetLessonDates(string groupName, string subjectName)
-        {
-            var dates = new List<DateTime>();
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                var sql = @"
-                SELECT DISTINCT g.grade_date as lesson_date 
-                FROM Grades g 
-                INNER JOIN Students s ON g.student_id = s.student_id 
-                INNER JOIN Subjects sub ON g.subject_id = sub.subject_id 
-                WHERE s.group_name = @GroupName AND sub.subject_name = @SubjectName 
-                ORDER BY g.grade_date";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@GroupName", groupName);
-                    command.Parameters.AddWithValue("@SubjectName", subjectName);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            dates.Add(reader.GetDateTime("lesson_date"));
-                        }
-                    }
-                }
-            }
-
-            return dates;
-        }
     }
 }

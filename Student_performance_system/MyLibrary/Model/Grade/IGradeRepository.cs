@@ -9,6 +9,5 @@ namespace MyLibrary.Repositories
     public interface IGradeRepository
     {
         List<Grade> GetGradesByGroupAndSubject(string groupName, string subjectName);
-        List<DateTime> GetLessonDates(string groupName, string subjectName);
     }
 }
