@@ -10,6 +10,6 @@ namespace MyLibrary
     {
         public int StudentId { get; set; }
         public DateTime LessonDate { get; set; }
-        public int GradeValue { get; set; }
+        public int? GradeValue { get; set; }
     }
 }

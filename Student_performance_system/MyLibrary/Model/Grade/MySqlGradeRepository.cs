@@ -48,7 +48,9 @@ namespace MyLibrary.Repositories
                             {
                                 StudentId = reader.GetInt32(0),
                                 LessonDate = reader.GetDateTime("lesson_date"),
-                                GradeValue = reader.GetInt32("grade_value")
+                                GradeValue = reader.IsDBNull(reader.GetOrdinal("grade_value"))
+                                                    ? (int?)null                          // Если в БД NULL - сохраняем null
+                                                    : reader.GetInt32("grade_value")      // Если в БД число - сохраняем число
                             });
                         }
                     }

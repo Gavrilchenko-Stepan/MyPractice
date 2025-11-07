@@ -136,7 +136,7 @@ namespace MainForm
                         if (grade != null)
                         {
                             cell.Value = grade.GradeValue.ToString();
-                            cell.Style.BackColor = GetGradeColor(grade.GradeValue);
+                            cell.Style.BackColor = GetGradeColor(grade.GradeValue.Value);
                             cell.Style.ForeColor = Color.Black;
                             cell.Style.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
                         }
