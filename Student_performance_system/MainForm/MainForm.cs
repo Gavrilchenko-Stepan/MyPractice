@@ -71,14 +71,14 @@ namespace MainForm
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 2) return; // Пропускаем заголовки, номер и студента
 
-            var rowData = dataGridViewJournal.Rows[e.RowIndex].DataBoundItem as RowData;
+            RowData rowData = dataGridViewJournal.Rows[e.RowIndex].DataBoundItem as RowData;
             if (rowData == null) return;
 
             // Получаем дату из заголовка колонки
-            var columnHeaderText = dataGridViewJournal.Columns[e.ColumnIndex].HeaderText;
+            string columnHeaderText = dataGridViewJournal.Columns[e.ColumnIndex].HeaderText;
 
             // Ищем оценку для этой даты
-            var grade = rowData.Grades?.FirstOrDefault(g =>
+            Grade grade = rowData.Grades?.FirstOrDefault(g =>
                 g.LessonDate.ToString("dd.MM.") == columnHeaderText);
 
             if (grade?.GradeValue.HasValue == true)
@@ -128,7 +128,7 @@ namespace MainForm
                 });
 
                 // Получаем все даты
-                var allDates = journalData.Rows
+                List<DateTime> allDates = journalData.Rows
                     .SelectMany(r => r.Grades)
                     .Select(g => g.LessonDate)
                     .Distinct()

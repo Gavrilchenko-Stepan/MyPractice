@@ -1,4 +1,5 @@
 ﻿using IniParser;
+using IniParser.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,11 @@ namespace MyLibrary
 
         private static string GetConnectionString()
         {
-            var server = GetValue("Database", "Server", "localhost");
-            var database = GetValue("Database", "Database", "university_journal");
-            var uid = GetValue("Database", "Uid", "root");
-            var pwd = GetValue("Database", "Pwd", "vertrigo");
-            var port = GetValue("Database", "Port", "3306");
+            string server = GetValue("Database", "Server", "localhost");
+            string database = GetValue("Database", "Database", "university_journal");
+            string uid = GetValue("Database", "Uid", "root");
+            string pwd = GetValue("Database", "Pwd", "vertrigo");
+            string port = GetValue("Database", "Port", "3306");
 
             return $"Server={server};Database={database};Uid={uid};Pwd={pwd};Port={port};";
         }
@@ -28,8 +29,8 @@ namespace MyLibrary
         {
             try
             {
-                var parser = new FileIniDataParser();
-                var data = parser.ReadFile("config.ini");
+                FileIniDataParser parser = new FileIniDataParser();
+                IniData data = parser.ReadFile("config.ini");
                 return data[section][key] ?? defaultValue;
             }
             catch

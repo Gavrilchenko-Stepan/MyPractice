@@ -19,13 +19,13 @@ namespace MyLibrary.Repositories
 
         public List<Student> GetStudentsByGroup(string groupName)
         {
-            var students = new List<Student>();
+            List<Student> students = new List<Student>();
 
-            using (var connection = new MySqlConnection(_connectionString))
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
 
-                var sql = @"
+                string sql = @"
                 SELECT 
                     s.student_id, 
                     CONCAT(s.last_name, ' ', s.first_name, ' ', COALESCE(s.middle_name, '')) as full_name, 
@@ -34,11 +34,11 @@ namespace MyLibrary.Repositories
                 WHERE s.group_name = @GroupName 
                 ORDER BY s.last_name, s.first_name";
 
-                using (var command = new MySqlCommand(sql, connection))
+                using (MySqlCommand command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@GroupName", groupName);
 
-                    using (var reader = command.ExecuteReader())
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {

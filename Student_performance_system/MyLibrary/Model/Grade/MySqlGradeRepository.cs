@@ -18,13 +18,13 @@ namespace MyLibrary.Repositories
 
         public List<Grade> GetGradesByGroupAndSubject(string groupName, string subjectName)
         {
-            var grades = new List<Grade>();
+            List<Grade> grades = new List<Grade>();
 
-            using (var connection = new MySqlConnection(_connectionString))
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
 
-                var sql = @"
+                string sql = @"
                 SELECT 
                     g.student_id, 
                     g.grade_date as lesson_date, 
@@ -35,12 +35,12 @@ namespace MyLibrary.Repositories
                 WHERE s.group_name = @GroupName AND sub.subject_name = @SubjectName
                 ORDER BY g.grade_date";
 
-                using (var command = new MySqlCommand(sql, connection))
+                using (MySqlCommand command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@GroupName", groupName);
                     command.Parameters.AddWithValue("@SubjectName", subjectName);
 
-                    using (var reader = command.ExecuteReader())
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {

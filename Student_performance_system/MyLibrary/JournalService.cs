@@ -24,14 +24,14 @@ namespace MyLibrary
         {
             try
             {
-                var students = _studentRepository.GetStudentsByGroup(groupName);
-                var allGrades = _gradeRepository.GetGradesByGroupAndSubject(groupName, subjectName);
+                List<Student> students = _studentRepository.GetStudentsByGroup(groupName);
+                List<Grade> allGrades = _gradeRepository.GetGradesByGroupAndSubject(groupName, subjectName);
 
-                var gradesByStudent = allGrades
+                Dictionary<int, List<Grade>> gradesByStudent = allGrades
                 .GroupBy(g => g.StudentId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-                var journalData = new JournalData
+                JournalData journalData = new JournalData
                 {
                     GroupName = groupName,
                     SubjectName = subjectName,
@@ -41,7 +41,7 @@ namespace MyLibrary
                 foreach (var student in students)
                 {
                     // Находим оценки для этого студента
-                    var studentGrades = gradesByStudent.ContainsKey(student.StudentId)
+                    List<Grade> studentGrades = gradesByStudent.ContainsKey(student.StudentId)
                         ? gradesByStudent[student.StudentId]
                         : new List<Grade>();
 
