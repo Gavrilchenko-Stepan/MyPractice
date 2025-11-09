@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,12 +50,29 @@ namespace MainForm
         {
             try
             {
+                string connectionString = IniConfig.ConnectionString;
+
+                if (string.IsNullOrEmpty(connectionString))
+                    throw new InvalidOperationException("Строка подключения не может быть пустой");
+
                 var studentRepository = new MySqlStudentRepository(IniConfig.ConnectionString);
                 var gradeRepository = new MySqlGradeRepository(IniConfig.ConnectionString);
                 var journalService = new JournalService(studentRepository, gradeRepository);
 
                 // Передаем this как IJournalView
                 _presenter = new JournalPresenter(this, journalService);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new Exception($"Ошибка инициализации: отсутствуют обязательные параметры - {ex.Message}", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new Exception($"Ошибка в параметрах подключения: {ex.Message}", ex);
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new Exception($"Файл конфигурации не найден: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
