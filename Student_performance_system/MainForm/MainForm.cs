@@ -113,17 +113,21 @@ namespace MainForm
                 dataGridViewJournal.CellFormatting -= DataGridViewJournal_CellFormatting;
                 dataGridViewJournal.CellFormatting += DataGridViewJournal_CellFormatting;
 
+                dataGridViewJournal.AutoGenerateColumns = false;
+
+
+                // Добавляем колонку номера
                 dataGridViewJournal.Columns.Add("Number", "№");
                 dataGridViewJournal.Columns["Number"].Width = 40;
                 dataGridViewJournal.Columns["Number"].Frozen = true;
                 dataGridViewJournal.Columns["Number"].ReadOnly = true;
 
-                // Колонка студента
+                // Добавляем колонку студента
                 dataGridViewJournal.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "Student",
+                    Name = "StudentName",
                     HeaderText = "Студент",
-                    DataPropertyName = "StudentName",
+                    DataPropertyName = "StudentName", // Связываем с свойством StudentName из RowData
                     Frozen = true,
                     Width = 200,
                     ReadOnly = true
@@ -141,15 +145,32 @@ namespace MainForm
                 foreach (var date in allDates)
                 {
                     var columnName = date.ToString("dd.MM.");
-                    dataGridViewJournal.Columns.Add(columnName, columnName);
-                    dataGridViewJournal.Columns[columnName].Width = 80;
-                    dataGridViewJournal.Columns[columnName].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    var dateColumn = new DataGridViewTextBoxColumn
+                    {
+                        Name = columnName,
+                        HeaderText = columnName,
+                        Width = 80,
+                        DefaultCellStyle = new DataGridViewCellStyle
+                        {
+                            Alignment = DataGridViewContentAlignment.MiddleCenter
+                        }
+                    };
+                    dataGridViewJournal.Columns.Add(dateColumn);
                 }
 
-                dataGridViewJournal.Columns.Add("Average", "Средний балл");
-                dataGridViewJournal.Columns["Average"].Width = 100;
-                dataGridViewJournal.Columns["Average"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                // Добавляем колонку среднего балла
+                dataGridViewJournal.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Average",
+                    HeaderText = "Средний балл",
+                    Width = 100,
+                    DefaultCellStyle = new DataGridViewCellStyle
+                    {
+                        Alignment = DataGridViewContentAlignment.MiddleCenter
+                    }
+                });
 
+                // Устанавливаем источник данных
                 dataGridViewJournal.DataSource = journalData.Rows;
 
                 for (int i = 0; i < dataGridViewJournal.Rows.Count; i++)
