@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,13 @@ namespace MyLibrary.Repositories
         {
             List<Grade> grades = new List<Grade>();
 
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
 
-                string sql = @"
+                    string sql = @"
                 SELECT 
                     g.student_id, 
                     g.grade_date as lesson_date, 
@@ -35,29 +38,38 @@ namespace MyLibrary.Repositories
                 WHERE s.group_name = @GroupName AND sub.subject_name = @SubjectName
                 ORDER BY g.grade_date";
 
-                using (MySqlCommand command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@GroupName", groupName);
-                    command.Parameters.AddWithValue("@SubjectName", subjectName);
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(sql, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.AddWithValue("@GroupName", groupName);
+                        command.Parameters.AddWithValue("@SubjectName", subjectName);
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            grades.Add(new Grade
+                            while (reader.Read())
                             {
-                                StudentId = reader.GetInt32(0),
-                                LessonDate = reader.GetDateTime("lesson_date"),
-                                GradeValue = reader.IsDBNull(reader.GetOrdinal("grade_value"))
-                                                    ? (int?)null                          // Если в БД NULL - сохраняем null
-                                                    : reader.GetInt32("grade_value")      // Если в БД число - сохраняем число
-                            });
+                                grades.Add(new Grade
+                                {
+                                    StudentId = reader.GetInt32(0),
+                                    LessonDate = reader.GetDateTime("lesson_date"),
+                                    GradeValue = reader.IsDBNull(reader.GetOrdinal("grade_value"))
+                                                        ? (int?)null                          // Если в БД NULL - сохраняем null
+                                                        : reader.GetInt32("grade_value")      // Если в БД число - сохраняем число
+                                });
+                            }
                         }
                     }
                 }
-            }
 
-            return grades;
+                return grades;
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception($"Ошибка базы данных при получении оценок: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при получении оценок: {ex.Message}", ex);
+            }
         }
     }
 }

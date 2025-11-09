@@ -21,11 +21,13 @@ namespace MyLibrary.Repositories
         {
             List<Student> students = new List<Student>();
 
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
 
-                string sql = @"
+                    string sql = @"
                 SELECT 
                     s.student_id, 
                     CONCAT(s.last_name, ' ', s.first_name, ' ', COALESCE(s.middle_name, '')) as full_name, 
@@ -34,26 +36,35 @@ namespace MyLibrary.Repositories
                 WHERE s.group_name = @GroupName 
                 ORDER BY s.last_name, s.first_name";
 
-                using (MySqlCommand command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@GroupName", groupName);
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(sql, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.AddWithValue("@GroupName", groupName);
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            students.Add(new Student
+                            while (reader.Read())
                             {
-                                StudentId = reader.GetInt32("student_id"),
-                                FullName = reader.GetString("full_name"),
-                                GroupName = reader.GetString("group_name")
-                            });
+                                students.Add(new Student
+                                {
+                                    StudentId = reader.GetInt32("student_id"),
+                                    FullName = reader.GetString("full_name"),
+                                    GroupName = reader.GetString("group_name")
+                                });
+                            }
                         }
                     }
                 }
-            }
 
-            return students;
+                return students;
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception($"Ошибка базы данных при получении студентов: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при получении студентов: {ex.Message}", ex);
+            }
         }
     }
 }

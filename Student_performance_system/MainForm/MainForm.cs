@@ -115,6 +115,8 @@ namespace MainForm
 
                 dataGridViewJournal.Columns.Add("Number", "№");
                 dataGridViewJournal.Columns["Number"].Width = 40;
+                dataGridViewJournal.Columns["Number"].Frozen = true;
+                dataGridViewJournal.Columns["Number"].ReadOnly = true;
 
                 // Колонка студента
                 dataGridViewJournal.Columns.Add(new DataGridViewTextBoxColumn
