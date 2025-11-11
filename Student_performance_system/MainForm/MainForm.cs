@@ -20,8 +20,8 @@ namespace MainForm
     {
         private AuthService _authService;
         private JournalPresenter _presenter;
-        private string _currentGroupName;
-        private string _currentSubjectName;
+        private string _currentGroupName = "П-10";
+        private string _currentSubjectName = "Математика";
 
         public string GroupName => _currentGroupName;
         public string SubjectName => _currentSubjectName;
@@ -29,9 +29,6 @@ namespace MainForm
         public MainForm()
         {
             InitializeComponent();
-
-            _currentGroupName = IniConfig.DefaultGroup;
-            _currentSubjectName = IniConfig.DefaultSubject;
 
             InitializeServices();
             ShowLoginForm();

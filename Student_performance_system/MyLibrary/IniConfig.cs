@@ -11,8 +11,6 @@ namespace MyLibrary
     public class IniConfig
     {
         public static string ConnectionString => GetConnectionString();
-        public static string DefaultGroup => GetValue("Settings", "DefaultGroup", "П-10");
-        public static string DefaultSubject => GetValue("Settings", "DefaultSubject", "Математика");
 
         private static string GetConnectionString()
         {
