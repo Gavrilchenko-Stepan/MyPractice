@@ -8,8 +8,8 @@ namespace MyLibrary
 {
     public class Student
     {
-        int StudentId { get; set; }
-        string FullName { get; set; }
-        string GroupName { get; set; }
+        public int StudentId { get; set; }
+        public string FullName { get; set; }
+        public string GroupName { get; set; }
     }
 }
