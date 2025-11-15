@@ -103,5 +103,29 @@ namespace Tests
             viewMock.Verify(v => v.ShowSuccessMessage(It.IsAny<string>()), Times.Never);
             viewMock.Verify(v => v.DisplayJournal(It.IsAny<JournalData>()), Times.Never);
         }
+
+        // ТЕСТ 6: Добавление даты в будущем
+        [DataTestMethod]
+        [DataRow("2026-02-22", null, "Дата занятия не может быть в будущем")]
+        [DataRow("2026-02-22", 3, "Дата занятия не может быть в будущем")]
+        public void AddLessonDate_FutureDate_ShouldShowErrorMessage(
+            string dateStr, int? lessonNumber, string expectedMessage)
+        {
+            // Arrange
+            var viewMock = new Mock<IJournalView>();
+            var serviceMock = new Mock<JournalService>();
+            var presenter = new JournalPresenter(viewMock.Object, serviceMock.Object);
+
+            DateTime futureDate = DateTime.Parse(dateStr);
+            var lessonData = new LessonData(futureDate, lessonNumber);
+            viewMock.Setup(v => v.GetNewLessonData()).Returns(lessonData);
+
+            // Act
+            presenter.AddLessonDate();
+
+            // Assert
+            viewMock.Verify(v => v.ShowErrorMessage(expectedMessage), Times.Once);
+            serviceMock.Verify(s => s.AddLessonDate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LessonData>()), Times.Never);
+        }
     }
 }

@@ -5,6 +5,9 @@ using MyLibrary.Repositories;
 using MyLibrary;
 using System;
 using System.Collections.Generic;
+using MyLibrary.DataModel;
+using MyLibrary.Presenter;
+using MyLibrary.View;
 
 namespace Tests
 {
