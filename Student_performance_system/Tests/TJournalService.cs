@@ -1,5 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using MyLibrary;
+using MyLibrary.DataModel.JournalData;
+using MyLibrary.DataModel;
+using MyLibrary.Model.JournalData;
+using MyLibrary.Presenter;
+using MyLibrary.Repositories;
+using MyLibrary.View;
 using System;
 using System.Collections.Generic;
 

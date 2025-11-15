@@ -96,6 +96,7 @@
     <Compile Include="AuthService.cs" />
     <Compile Include="DataModel\Grade\Grade.cs" />
     <Compile Include="DataModel\JournalData\JournalData.cs" />
+    <Compile Include="DataModel\LessonData.cs" />
     <Compile Include="IniConfig.cs" />
     <Compile Include="IUserRepository.cs" />
     <Compile Include="JournalService.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="DataModel\Student\Student.cs" />
     <Compile Include="Model\Grade\IGradeRepository.cs" />
     <Compile Include="Model\Grade\MySqlGradeRepository.cs" />
+    <Compile Include="Model\JournalData\IJournalCommandRepository.cs" />
     <Compile Include="Model\Student\IStudentRepository.cs" />
     <Compile Include="Model\Student\MySqlStudentRepository.cs" />
     <Compile Include="Presenter\JournalPresenter.cs" />
