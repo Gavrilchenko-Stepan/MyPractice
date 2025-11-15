@@ -111,7 +111,6 @@ namespace Tests
         public void AddLessonDate_FutureDate_ShouldShowErrorMessage(
             string dateStr, int? lessonNumber, string expectedMessage)
         {
-            // Arrange
             var viewMock = new Mock<IJournalView>();
             var serviceMock = new Mock<JournalService>();
             var presenter = new JournalPresenter(viewMock.Object, serviceMock.Object);
@@ -120,10 +119,8 @@ namespace Tests
             var lessonData = new LessonData(futureDate, lessonNumber);
             viewMock.Setup(v => v.GetNewLessonData()).Returns(lessonData);
 
-            // Act
             presenter.AddLessonDate();
 
-            // Assert
             viewMock.Verify(v => v.ShowErrorMessage(expectedMessage), Times.Once);
             serviceMock.Verify(s => s.AddLessonDate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LessonData>()), Times.Never);
         }

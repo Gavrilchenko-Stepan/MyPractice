@@ -109,7 +109,6 @@ namespace Tests
         public void AddLessonDate_InvalidLessonNumber_ShouldThrowException(
             string dateStr, int? lessonNumber, string expectedMessage)
         {
-            // Arrange
             var studentRepoMock = new Mock<IStudentRepository>();
             var gradeRepoMock = new Mock<IGradeRepository>();
             var commandRepoMock = new Mock<IJournalCommandRepository>();
@@ -118,7 +117,6 @@ namespace Tests
 
             DateTime date = DateTime.Parse(dateStr);
 
-            // Act & Assert
             var exception = Assert.ThrowsException<ArgumentException>(() =>
                 journalService.AddLessonDate("П-10", "Математика", date, lessonNumber));
 
