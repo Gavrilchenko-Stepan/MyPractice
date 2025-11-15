@@ -139,5 +139,39 @@ namespace Tests
             // Проверяем, что журнал обновляется после успешного добавления
             viewMock.Verify(v => v.DisplayJournal(It.IsAny<JournalData>()), Times.Once);
         }
+
+        // ТЕСТ 2.1 и 2.2: Попытка добавления существующей даты
+        [DataTestMethod]
+        [DataRow("2025-02-15", null, false, "Занятие 15.02.2025 уже существует в журнале")]
+        [DataRow("2025-02-15", 2, false, "Занятие 15.02.2025 (пара 2) уже существует в журнале")]
+        public void AddLessonDate_ExistingDate_ShouldShowErrorMessage(
+            string dateStr, int? lessonNumber, bool expectedSuccess, string expectedMessage)
+        {
+            var studentRepoMock = new Mock<IStudentRepository>();
+            var gradeRepoMock = new Mock<IGradeRepository>();
+            var commandRepoMock = new Mock<IJournalCommandRepository>();
+            var viewMock = new Mock<IJournalView>();
+
+            var journalService = new JournalService(studentRepoMock.Object, gradeRepoMock.Object, commandRepoMock.Object);
+
+            var presenter = new JournalPresenter(viewMock.Object, journalService);
+
+            DateTime newDate = DateTime.Parse(dateStr);
+            var lessonData = new LessonData(newDate, lessonNumber);
+
+            viewMock.Setup(v => v.GetNewLessonData()).Returns(lessonData);
+            viewMock.Setup(v => v.GroupName).Returns("П-10");
+            viewMock.Setup(v => v.SubjectName).Returns("Математика");
+
+            commandRepoMock
+                .Setup(r => r.AddLessonDate("П-10", "Математика", newDate, lessonNumber))
+                .Returns(expectedSuccess);
+
+            presenter.AddLessonDate();
+
+            viewMock.Verify(v => v.ShowErrorMessage(expectedMessage), Times.Once);
+            viewMock.Verify(v => v.ShowSuccessMessage(It.IsAny<string>()), Times.Never);
+            viewMock.Verify(v => v.DisplayJournal(It.IsAny<JournalData>()), Times.Never);
+        }
     }
 }
