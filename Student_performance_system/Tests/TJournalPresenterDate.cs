@@ -104,7 +104,7 @@ namespace Tests
             viewMock.Verify(v => v.DisplayJournal(It.IsAny<JournalData>()), Times.Never);
         }
 
-        // ТЕСТ 6: Добавление даты в будущем
+        // ТЕСТ 5: Добавление даты в будущем
         [DataTestMethod]
         [DataRow("2026-02-22", null, "Дата занятия не может быть в будущем")]
         [DataRow("2026-02-22", 3, "Дата занятия не может быть в будущем")]

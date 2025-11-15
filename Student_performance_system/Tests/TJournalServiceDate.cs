@@ -101,5 +101,29 @@ namespace Tests
             Assert.AreEqual(2, orderedGrades[1].LessonNumber); // вторая пара 15.02
             Assert.IsNull(orderedGrades[2].LessonNumber);      // 20.02 без номера пары
         }
+
+        // ТЕСТ 4: Валидация номера пары
+        [DataTestMethod]
+        [DataRow("2025-02-22", 6, "Номер пары должен быть от 1 до 5")]
+        [DataRow("2025-02-22", 0, "Номер пары должен быть от 1 до 5")]
+        public void AddLessonDate_InvalidLessonNumber_ShouldThrowException(
+            string dateStr, int? lessonNumber, string expectedMessage)
+        {
+            // Arrange
+            var studentRepoMock = new Mock<IStudentRepository>();
+            var gradeRepoMock = new Mock<IGradeRepository>();
+            var commandRepoMock = new Mock<IJournalCommandRepository>();
+
+            var journalService = new JournalService(studentRepoMock.Object, gradeRepoMock.Object, commandRepoMock.Object);
+
+            DateTime date = DateTime.Parse(dateStr);
+
+            // Act & Assert
+            var exception = Assert.ThrowsException<ArgumentException>(() =>
+                journalService.AddLessonDate("П-10", "Математика", date, lessonNumber));
+
+            Assert.IsTrue(exception.Message.Contains(expectedMessage));
+            commandRepoMock.Verify(r => r.AddLessonDate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<int?>()), Times.Never);
+        }
     }
 }
