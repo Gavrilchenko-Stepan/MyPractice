@@ -96,6 +96,7 @@
     <Compile Include="AuthService.cs" />
     <Compile Include="DataModel\Grade\Grade.cs" />
     <Compile Include="DataModel\JournalData\JournalData.cs" />
+    <Compile Include="DataModel\LessonData.cs" />
     <Compile Include="IniConfig.cs" />
     <Compile Include="IUserRepository.cs" />
     <Compile Include="JournalService.cs" />
