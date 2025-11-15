@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using MyLibrary.DataModel;
 using MyLibrary.Presenter;
 using MyLibrary.View;
+using System.Linq;
 
 namespace Tests
 {
@@ -58,6 +59,47 @@ namespace Tests
             Assert.AreEqual(new DateTime(2025, 02, 01), sortedDates[0]);
             Assert.AreEqual(newDate, sortedDates[1]);
             Assert.AreEqual(new DateTime(2025, 02, 15), sortedDates[2]);
+        }
+
+        // ТЕСТ 3.2: Сортировка дат с разными номерами пар
+        [TestMethod]
+        public void GetJournalData_MultipleLessonsSameDay_ShouldGroupAndOrderCorrectly()
+        {
+            var studentRepoMock = new Mock<IStudentRepository>();
+            var gradeRepoMock = new Mock<IGradeRepository>();
+            var commandRepoMock = new Mock<IJournalCommandRepository>();
+
+            var journalService = new JournalService(studentRepoMock.Object, gradeRepoMock.Object, commandRepoMock.Object);
+
+            var students = new List<Student>
+            {
+                new Student { StudentId = 1, FullName = "Иванов Иван", GroupName = "П-10" }
+            };
+
+            var grades = new List<Grade>
+            {
+                new Grade { StudentId = 1, LessonDate = new DateTime(2025, 02, 15), LessonNumber = 2, GradeValue = 5 },
+                new Grade { StudentId = 1, LessonDate = new DateTime(2025, 02, 15), LessonNumber = 1, GradeValue = 4 },
+                new Grade { StudentId = 1, LessonDate = new DateTime(2025, 02, 20), LessonNumber = null, GradeValue = 3 }
+            };
+
+            studentRepoMock.Setup(r => r.GetStudentsByGroup("П-10")).Returns(students);
+            gradeRepoMock.Setup(r => r.GetGradesByGroupAndSubject("П-10", "Математика")).Returns(grades);
+
+            var result = journalService.GetJournalData("П-10", "Математика");
+            var studentGrades = result.Rows[0].Grades;
+
+            Assert.AreEqual(3, studentGrades.Count);
+
+            // Проверяем сортировку по дате и номеру пары
+            var orderedGrades = studentGrades
+                .OrderBy(g => g.LessonDate)
+                .ThenBy(g => g.LessonNumber)
+                .ToList();
+
+            Assert.AreEqual(1, orderedGrades[0].LessonNumber); // первая пара 15.02
+            Assert.AreEqual(2, orderedGrades[1].LessonNumber); // вторая пара 15.02
+            Assert.IsNull(orderedGrades[2].LessonNumber);      // 20.02 без номера пары
         }
     }
 }
