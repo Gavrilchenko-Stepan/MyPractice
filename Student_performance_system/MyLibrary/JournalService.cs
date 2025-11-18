@@ -1,6 +1,5 @@
 ﻿using MyLibrary.DataModel;
 using MyLibrary.DataModel.JournalData;
-using MyLibrary.Model.JournalData;
 using MyLibrary.Repositories;
 using System;
 using System.Collections.Generic;

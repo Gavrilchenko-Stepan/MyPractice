@@ -1,4 +1,5 @@
 ﻿using MyLibrary;
+using MyLibrary.DataModel;
 using MyLibrary.DataModel.JournalData;
 using MyLibrary.Presenter;
 using MyLibrary.Repositories;
@@ -52,7 +53,9 @@ namespace MainForm
 
             var studentRepository = new MySqlStudentRepository(IniConfig.ConnectionString);
             var gradeRepository = new MySqlGradeRepository(IniConfig.ConnectionString);
-            var journalService = new JournalService(studentRepository, gradeRepository);
+            var journalCommandRepository = new MySqlJournalCommandRepository(connectionString);
+
+            var journalService = new JournalService(studentRepository, gradeRepository, journalCommandRepository);
 
             // Передаем this как IJournalView
             _presenter = new JournalPresenter(this, journalService);
@@ -226,6 +229,35 @@ namespace MainForm
             {
                 _authService.Logout();
                 ShowLoginForm();
+            }
+        }
+
+        public void ShowSuccessMessage(string message)
+        {
+            MessageBox.Show(message, "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public LessonData GetNewLessonData()
+        {
+            using (var dialog = new AddLessonDateDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    return new LessonData(dialog.SelectedDate, dialog.LessonNumber);
+                }
+            }
+            return null;
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _presenter.AddLessonDate();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка: {ex.Message}");
             }
         }
     }

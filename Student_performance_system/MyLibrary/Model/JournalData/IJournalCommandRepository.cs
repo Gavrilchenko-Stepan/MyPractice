@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyLibrary.Model.JournalData
+namespace MyLibrary.Repositories
 {
     public interface IJournalCommandRepository
     {
