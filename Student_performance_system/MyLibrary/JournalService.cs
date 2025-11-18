@@ -1,4 +1,5 @@
 ﻿using MyLibrary.DataModel.JournalData;
+using MyLibrary.Model.JournalData;
 using MyLibrary.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ namespace MyLibrary
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IGradeRepository _gradeRepository;
+        private readonly IJournalCommandRepository _journalCommandRepository;
 
-        public JournalService(IStudentRepository studentRepository, IGradeRepository gradeRepository)
+        public JournalService(IStudentRepository studentRepository, IGradeRepository gradeRepository, IJournalCommandRepository journalCommandRepository)
         {
             _studentRepository = studentRepository;
             _gradeRepository = gradeRepository;
+            _journalCommandRepository = journalCommandRepository;
         }
 
         public JournalData GetJournalData(string groupName, string subjectName)
@@ -58,6 +61,21 @@ namespace MyLibrary
             {
                 throw new Exception($"Ошибка при загрузке данных журнала: {ex.Message}", ex);
             }
+        }
+
+        public bool AddLessonDate(string groupName, string subjectName, DateTime lessonDate, int? lessonNumber = null)
+        {
+            // Валидация бизнес-правил
+            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(subjectName))
+                throw new ArgumentException("Группа и предмет обязательны");
+
+            if (lessonDate > DateTime.Now.Date)
+                throw new ArgumentException("Дата не может быть в будущем");
+
+            if (lessonNumber.HasValue && (lessonNumber < 1 || lessonNumber > 5))
+                throw new ArgumentException("Номер пары должен быть от 1 до 5");
+
+            return _journalCommandRepository.AddLessonDate(groupName, subjectName, lessonDate, lessonNumber);
         }
     }
 }
