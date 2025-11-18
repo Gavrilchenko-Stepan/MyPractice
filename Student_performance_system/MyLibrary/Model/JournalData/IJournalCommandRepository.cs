@@ -8,5 +8,6 @@ namespace MyLibrary.Model.JournalData
 {
     public interface IJournalCommandRepository
     {
+        bool AddLessonDate(string groupName, string subjectName, DateTime lessonDate, int? lessonNumber = null);
     }
 }
