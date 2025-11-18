@@ -1,4 +1,5 @@
-﻿using MyLibrary.DataModel.JournalData;
+﻿using MyLibrary.DataModel;
+using MyLibrary.DataModel.JournalData;
 using MyLibrary.Model.JournalData;
 using MyLibrary.Repositories;
 using System;
@@ -76,6 +77,11 @@ namespace MyLibrary
                 throw new ArgumentException("Номер пары должен быть от 1 до 5");
 
             return _journalCommandRepository.AddLessonDate(groupName, subjectName, lessonDate, lessonNumber);
+        }
+
+        public bool AddLessonDate(string groupName, string subjectName, LessonData lessonData)
+        {
+            return AddLessonDate(groupName, subjectName, lessonData.Date, lessonData.LessonNumber);
         }
     }
 }
