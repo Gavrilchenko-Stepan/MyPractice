@@ -133,23 +133,34 @@ namespace MainForm
                     ReadOnly = true
                 });
 
-                // Получаем все даты
-                List<DateTime> allDates = journalData.Rows
-                    .SelectMany(r => r.Grades)
-                    .Select(g => g.LessonDate)
-                    .Distinct()
-                    .OrderBy(d => d)
-                    .ToList();
+                var allLessons = journalData.Rows
+                        .SelectMany(r => r.Grades)
+                        .Select(g => new { Date = g.LessonDate, LessonNumber = g.LessonNumber })
+                        .Distinct()
+                        .OrderBy(x => x.Date)
+                        .ThenBy(x => x.LessonNumber)
+                        .ToList();
 
-                // Создаем колонки для каждой даты
-                foreach (var date in allDates)
+                // Создаем колонки для каждой пары
+                foreach (var lesson in allLessons)
                 {
-                    var columnName = date.ToString("dd.MM.");
+                    string columnName = $"{lesson.Date:dd.MM.}|{lesson.LessonNumber}";
+
+                    string headerText;
+                    if (lesson.LessonNumber.HasValue)
+                    {
+                        headerText = $"{lesson.Date:dd.MM.}({lesson.LessonNumber})";
+                    }
+                    else
+                    {
+                        headerText = $"{lesson.Date:dd.MM.}";
+                    }
+
                     var dateColumn = new DataGridViewTextBoxColumn
                     {
                         Name = columnName,
-                        HeaderText = columnName,
-                        Width = 80,
+                        HeaderText = headerText,
+                        Width = 70,
                         DefaultCellStyle = new DataGridViewCellStyle
                         {
                             Alignment = DataGridViewContentAlignment.MiddleCenter

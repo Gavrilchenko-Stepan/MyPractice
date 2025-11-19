@@ -24,35 +24,6 @@ namespace MyLibrary.Repositories
                 {
                     connection.Open();
 
-                    // Проверяем существование занятия
-                    string checkSql = @"
-                        SELECT COUNT(*) 
-                        FROM Grades g 
-                        INNER JOIN Students s ON g.student_id = s.student_id 
-                        INNER JOIN Subjects sub ON g.subject_id = sub.subject_id 
-                        WHERE s.group_name = @GroupName 
-                        AND sub.subject_name = @SubjectName 
-                        AND DATE(g.grade_date) = DATE(@LessonDate)";
-
-                    if (lessonNumber.HasValue)
-                        checkSql += " AND g.lesson_number = @LessonNumber";
-                    else
-                        checkSql += " AND g.lesson_number IS NULL";
-
-                    using (MySqlCommand checkCommand = new MySqlCommand(checkSql, connection))
-                    {
-                        checkCommand.Parameters.AddWithValue("@GroupName", groupName);
-                        checkCommand.Parameters.AddWithValue("@SubjectName", subjectName);
-                        checkCommand.Parameters.AddWithValue("@LessonDate", lessonDate.Date);
-
-                        if (lessonNumber.HasValue)
-                            checkCommand.Parameters.AddWithValue("@LessonNumber", lessonNumber.Value);
-
-                        long existingCount = (long)checkCommand.ExecuteScalar();
-                        if (existingCount > 0)
-                            return false;
-                    }
-
                     // Получаем ID предмета
                     string subjectIdSql = "SELECT subject_id FROM Subjects WHERE subject_name = @SubjectName";
                     int subjectId;
@@ -62,7 +33,7 @@ namespace MyLibrary.Repositories
                         subjectId = Convert.ToInt32(subjectCommand.ExecuteScalar());
                     }
 
-                    // Получаем студентов
+                    // Получаем студентов группы
                     string studentsSql = "SELECT student_id FROM Students WHERE group_name = @GroupName";
                     List<int> studentIds = new List<int>();
                     using (MySqlCommand studentsCommand = new MySqlCommand(studentsSql, connection))
@@ -75,10 +46,10 @@ namespace MyLibrary.Repositories
                         }
                     }
 
-                    // Добавляем записи
+                    // Добавляем записи для каждого студента
                     string insertSql = @"
-                        INSERT INTO Grades (student_id, subject_id, grade_date, lesson_number, grade_value) 
-                        VALUES (@StudentId, @SubjectId, @LessonDate, @LessonNumber, NULL)";
+                INSERT INTO Grades (student_id, subject_id, grade_date, lesson_number, grade_value) 
+                VALUES (@StudentId, @SubjectId, @LessonDate, @LessonNumber, NULL)";
 
                     using (MySqlCommand insertCommand = new MySqlCommand(insertSql, connection))
                     {
@@ -87,17 +58,29 @@ namespace MyLibrary.Repositories
                         insertCommand.Parameters.Add("@LessonDate", MySqlDbType.DateTime);
                         insertCommand.Parameters.Add("@LessonNumber", MySqlDbType.Int32);
 
+                        int successCount = 0;
                         foreach (int studentId in studentIds)
                         {
-                            insertCommand.Parameters["@StudentId"].Value = studentId;
-                            insertCommand.Parameters["@SubjectId"].Value = subjectId;
-                            insertCommand.Parameters["@LessonDate"].Value = lessonDate.Date;
-                            insertCommand.Parameters["@LessonNumber"].Value = lessonNumber.HasValue ? lessonNumber.Value : (object)DBNull.Value;
-                            insertCommand.ExecuteNonQuery();
-                        }
-                    }
+                            try
+                            {
+                                insertCommand.Parameters["@StudentId"].Value = studentId;
+                                insertCommand.Parameters["@SubjectId"].Value = subjectId;
+                                insertCommand.Parameters["@LessonDate"].Value = lessonDate.Date;
+                                insertCommand.Parameters["@LessonNumber"].Value = lessonNumber.HasValue ? lessonNumber.Value : (object)DBNull.Value;
 
-                    return true;
+                                insertCommand.ExecuteNonQuery();
+                                successCount++;
+                            }
+                            catch (MySqlException ex)
+                            {
+                                // Игнорируем только ошибки дубликатов (триггер выбросит исключение)
+                                if (ex.Number != 1644) // 1644 - код ошибки пользовательского SIGNAL в MySQL
+                                    throw;
+                            }
+                        }
+
+                        return successCount > 0; // true если добавили хотя бы одну запись
+                    }
                 }
             }
             catch (Exception ex)

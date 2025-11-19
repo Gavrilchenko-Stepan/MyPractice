@@ -55,8 +55,8 @@ namespace MyLibrary.Repositories
                                         ? (int?)null
                                         : reader.GetInt32("lesson_number"),
                                     GradeValue = reader.IsDBNull(reader.GetOrdinal("grade_value"))
-                                                        ? (int?)null                          // Если в БД NULL - сохраняем null
-                                                        : reader.GetInt32("grade_value")      // Если в БД число - сохраняем число
+                                                        ? (int?)null
+                                                        : reader.GetInt32("grade_value")
                                 });
                             }
                         }
