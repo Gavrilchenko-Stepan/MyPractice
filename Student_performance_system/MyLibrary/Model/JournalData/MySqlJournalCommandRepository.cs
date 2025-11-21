@@ -71,11 +71,10 @@ namespace MyLibrary.Repositories
                                 insertCommand.ExecuteNonQuery();
                                 successCount++;
                             }
-                            catch (MySqlException ex)
+                            catch (MySqlException ex) when (ex.Number == 1644)
                             {
-                                // Игнорируем только ошибки дубликатов (триггер выбросит исключение)
-                                if (ex.Number != 1644) // 1644 - код ошибки пользовательского SIGNAL в MySQL
-                                    throw;
+                                // Дубликат заблокирован триггером - продолжаем со следующими студентами
+                                continue;
                             }
                         }
 
