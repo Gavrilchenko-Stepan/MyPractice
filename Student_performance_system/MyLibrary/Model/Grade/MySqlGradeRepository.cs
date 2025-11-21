@@ -30,13 +30,13 @@ namespace MyLibrary.Repositories
                     string sql = @"
                 SELECT 
                     g.student_id, 
-                    g.grade_date as lesson_date, 
+                    g.grade_date as lesson_date, g.lesson_number,
                     CAST(g.grade_value as SIGNED) as grade_value
                 FROM Grades g 
                 INNER JOIN Students s ON g.student_id = s.student_id 
                 INNER JOIN Subjects sub ON g.subject_id = sub.subject_id 
                 WHERE s.group_name = @GroupName AND sub.subject_name = @SubjectName
-                ORDER BY g.grade_date";
+                ORDER BY g.grade_date, g.lesson_number";
 
                     using (MySqlCommand command = new MySqlCommand(sql, connection))
                     {
@@ -51,9 +51,12 @@ namespace MyLibrary.Repositories
                                 {
                                     StudentId = reader.GetInt32(0),
                                     LessonDate = reader.GetDateTime("lesson_date"),
+                                    LessonNumber = reader.IsDBNull(reader.GetOrdinal("lesson_number"))
+                                        ? (int?)null
+                                        : reader.GetInt32("lesson_number"),
                                     GradeValue = reader.IsDBNull(reader.GetOrdinal("grade_value"))
-                                                        ? (int?)null                          // Если в БД NULL - сохраняем null
-                                                        : reader.GetInt32("grade_value")      // Если в БД число - сохраняем число
+                                                        ? (int?)null
+                                                        : reader.GetInt32("grade_value")
                                 });
                             }
                         }

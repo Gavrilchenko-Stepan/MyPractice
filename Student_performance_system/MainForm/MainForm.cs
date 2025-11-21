@@ -1,4 +1,5 @@
 ﻿using MyLibrary;
+using MyLibrary.DataModel;
 using MyLibrary.DataModel.JournalData;
 using MyLibrary.Presenter;
 using MyLibrary.Repositories;
@@ -52,7 +53,9 @@ namespace MainForm
 
             var studentRepository = new MySqlStudentRepository(IniConfig.ConnectionString);
             var gradeRepository = new MySqlGradeRepository(IniConfig.ConnectionString);
-            var journalService = new JournalService(studentRepository, gradeRepository);
+            var journalCommandRepository = new MySqlJournalCommandRepository(connectionString);
+
+            var journalService = new JournalService(studentRepository, gradeRepository, journalCommandRepository);
 
             // Передаем this как IJournalView
             _presenter = new JournalPresenter(this, journalService);
@@ -130,23 +133,34 @@ namespace MainForm
                     ReadOnly = true
                 });
 
-                // Получаем все даты
-                List<DateTime> allDates = journalData.Rows
-                    .SelectMany(r => r.Grades)
-                    .Select(g => g.LessonDate)
-                    .Distinct()
-                    .OrderBy(d => d)
-                    .ToList();
+                var allLessons = journalData.Rows
+                        .SelectMany(r => r.Grades)
+                        .Select(g => new { Date = g.LessonDate, LessonNumber = g.LessonNumber })
+                        .Distinct()
+                        .OrderBy(x => x.Date)
+                        .ThenBy(x => x.LessonNumber)
+                        .ToList();
 
-                // Создаем колонки для каждой даты
-                foreach (var date in allDates)
+                // Создаем колонки для каждой пары
+                foreach (var lesson in allLessons)
                 {
-                    var columnName = date.ToString("dd.MM.");
+                    string columnName = $"{lesson.Date:dd.MM.}|{lesson.LessonNumber}";
+
+                    string headerText;
+                    if (lesson.LessonNumber.HasValue)
+                    {
+                        headerText = $"{lesson.Date:dd.MM.}({lesson.LessonNumber})";
+                    }
+                    else
+                    {
+                        headerText = $"{lesson.Date:dd.MM.}";
+                    }
+
                     var dateColumn = new DataGridViewTextBoxColumn
                     {
                         Name = columnName,
-                        HeaderText = columnName,
-                        Width = 80,
+                        HeaderText = headerText,
+                        Width = 70,
                         DefaultCellStyle = new DataGridViewCellStyle
                         {
                             Alignment = DataGridViewContentAlignment.MiddleCenter
@@ -226,6 +240,35 @@ namespace MainForm
             {
                 _authService.Logout();
                 ShowLoginForm();
+            }
+        }
+
+        public void ShowSuccessMessage(string message)
+        {
+            MessageBox.Show(message, "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public LessonData GetNewLessonData()
+        {
+            using (var dialog = new AddLessonDateDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    return new LessonData(dialog.SelectedDate, dialog.LessonNumber);
+                }
+            }
+            return null;
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _presenter.AddLessonDate();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка: {ex.Message}");
             }
         }
     }

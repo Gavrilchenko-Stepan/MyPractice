@@ -105,6 +105,7 @@
     <Compile Include="Model\Grade\IGradeRepository.cs" />
     <Compile Include="Model\Grade\MySqlGradeRepository.cs" />
     <Compile Include="Model\JournalData\IJournalCommandRepository.cs" />
+    <Compile Include="Model\JournalData\MySqlJournalCommandRepository.cs" />
     <Compile Include="Model\Student\IStudentRepository.cs" />
     <Compile Include="Model\Student\MySqlStudentRepository.cs" />
     <Compile Include="Presenter\JournalPresenter.cs" />
