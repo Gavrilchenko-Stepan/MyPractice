@@ -61,13 +61,10 @@ namespace Tests
         [DataRow("32.01", "0001-01-01", null, false)] // неверная дата
         public void TryParseDate_VariousInputs_ParsesCorrectly(string input, string expectedDateStr, int? expectedLessonNumber, bool expectedResult)
         {
-            // Arrange
             DateTime expectedDate = DateTime.Parse(expectedDateStr);
 
-            // Act
             bool result = TryParseDate(input, out DateTime actualDate, out int? actualLessonNumber);
 
-            // Assert
             Assert.AreEqual(expectedResult, result, $"Результат парсинга для: {input}");
 
             if (expectedResult)
@@ -77,6 +74,40 @@ namespace Tests
             }
         }
 
+        //Тест 3: Ошибки редактирования
+        [TestMethod]
+        [DataRow("2025-02-15", "2026-02-18", null, null, "Новая дата не может быть в будущем")] // будущая дата
+        [DataRow("2025-02-15", "2025-12-31", 1, 2, "Новая дата не может быть в будущем")] // будущая дата с номером
+        [DataRow("2025-02-15", "2025-02-15", 1, 1, "Необходимо изменить дату или номер пары")] // нет изменений
+        public void EditDate_ErrorScenarios_ShowsErrorMessage(string oldDateStr, string newDateStr, int? oldNumber, int? newNumber, string expectedError)
+        {
+            DateTime oldDate = DateTime.Parse(oldDateStr);
+            DateTime newDate = DateTime.Parse(newDateStr);
 
+            var mockView = new Mock<IJournalView>();
+            var mockJournalService = new Mock<JournalService>(
+                Mock.Of<IStudentRepository>(),
+                Mock.Of<IGradeRepository>(),
+                Mock.Of<IJournalCommandRepository>());
+
+            var presenter = new JournalPresenter(mockView.Object, mockJournalService.Object);
+
+            mockView.Setup(v => v.GroupName).Returns("П-10");
+            mockView.Setup(v => v.SubjectName).Returns("Математика");
+
+            mockJournalService.Setup(s => s.EditLessonDate(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<int?>(),
+                It.IsAny<DateTime>(), It.IsAny<int?>()))
+                .Throws(new ArgumentException(expectedError));
+
+            presenter.EditLessonDate(
+                new LessonData(oldDate, oldNumber),
+                new LessonData(newDate, newNumber));
+
+            mockView.Verify(v => v.ShowErrorMessage(It.Is<string>(msg =>
+                msg.Contains("Ошибка при редактировании даты") &&
+                msg.Contains(expectedError))),
+                Times.Once);
+        }
     }
 }
