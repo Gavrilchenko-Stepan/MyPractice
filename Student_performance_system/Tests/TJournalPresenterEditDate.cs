@@ -46,6 +46,37 @@ namespace Tests
                 Times.Once);
         }
 
+        //Тест 2: Парсинг дат + Валидация ошибок
+        [TestMethod]
+        [DataRow("15.02", "2025-02-15", null, true)] // простая дата
+        [DataRow("15.02(2)", "2025-02-15", 2, true)] // дата с номером
+        [DataRow("15.02.2025", "2025-02-15", null, true)] // дата с годом
+        [DataRow("1.3", "2025-03-01", null, true)] // короткий формат
+        [DataRow("1.3(4)", "2025-03-01", 4, true)] // короткий формат с номером
+        [DataRow("18-02", "2025-02-18", null, true)] // с дефисами
+        [DataRow("18-02(3)", "2025-02-18", 3, true)] // с дефисами и номером
+        [DataRow("", "0001-01-01", null, false)] // пустая строка
+        [DataRow("abc", "0001-01-01", null, false)] // не дата
+        [DataRow("15.02(6)", "0001-01-01", null, false)] // неверный номер пары
+        [DataRow("32.01", "0001-01-01", null, false)] // неверная дата
+        public void TryParseDate_VariousInputs_ParsesCorrectly(string input, string expectedDateStr, int? expectedLessonNumber, bool expectedResult)
+        {
+            // Arrange
+            DateTime expectedDate = DateTime.Parse(expectedDateStr);
+
+            // Act
+            bool result = TryParseDate(input, out DateTime actualDate, out int? actualLessonNumber);
+
+            // Assert
+            Assert.AreEqual(expectedResult, result, $"Результат парсинга для: {input}");
+
+            if (expectedResult)
+            {
+                Assert.AreEqual(expectedDate, actualDate, $"Дата должна быть: {expectedDate}");
+                Assert.AreEqual(expectedLessonNumber, actualLessonNumber, $"Номер пары должен быть: {expectedLessonNumber}");
+            }
+        }
+
 
     }
 }
