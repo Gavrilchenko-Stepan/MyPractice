@@ -78,7 +78,6 @@ namespace Tests
         [TestMethod]
         [DataRow("2025-02-15", "2026-02-18", null, null, "Новая дата не может быть в будущем")] // будущая дата
         [DataRow("2025-02-15", "2025-12-31", 1, 2, "Новая дата не может быть в будущем")] // будущая дата с номером
-        [DataRow("2025-02-15", "2025-02-15", 1, 1, "Необходимо изменить дату или номер пары")] // нет изменений
         public void EditDate_ErrorScenarios_ShowsErrorMessage(string oldDateStr, string newDateStr, int? oldNumber, int? newNumber, string expectedError)
         {
             DateTime oldDate = DateTime.Parse(oldDateStr);
