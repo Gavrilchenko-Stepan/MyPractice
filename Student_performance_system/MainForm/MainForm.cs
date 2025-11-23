@@ -34,6 +34,93 @@ namespace MainForm
             InitializeServices();
             ShowLoginForm();
             Shown += (s, e) => LoadJournalAutomatically();
+
+            dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
+        }
+
+        private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex < 2 || e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return;
+
+            var column = dataGridViewJournal.Columns[e.ColumnIndex];
+            var headerRect = dataGridViewJournal.GetCellDisplayRectangle(e.ColumnIndex, -1, true);
+
+            var textBox = new TextBox
+            {
+                Text = column.HeaderText.ToString(),
+                Bounds = headerRect,
+                Font = dataGridViewJournal.ColumnHeadersDefaultCellStyle.Font,
+                BackColor = Color.LightYellow
+            };
+
+            textBox.KeyDown += (s, ke) =>
+            {
+                if (ke.KeyCode == Keys.Enter) SaveEdit(column, textBox.Text);
+                if (ke.KeyCode == Keys.Escape) textBox.Dispose();
+            };
+
+            textBox.LostFocus += (s, ev) =>
+            {
+                SaveEdit(column, textBox.Text);
+                textBox.Dispose();
+            };
+
+            dataGridViewJournal.Controls.Add(textBox);
+            textBox.Focus();
+            textBox.SelectAll();
+        }
+
+        private void SaveEdit(DataGridViewColumn column, string newHeader)
+        {
+            if (TryParseDate(newHeader, out DateTime newDate, out int? newNumber) &&
+                TryParseDate(column.HeaderText.ToString(), out DateTime oldDate, out int? oldNumber))
+            {
+                if (newDate > DateTime.Now)
+                {
+                    ShowErrorMessage("Дата не может быть в будущем");
+                    return;
+                }
+
+                if (newDate != oldDate || newNumber != oldNumber)
+                {
+                    _presenter.EditLessonDate(
+                        new LessonData(oldDate, oldNumber),
+                        new LessonData(newDate, newNumber)
+                    );
+                }
+            }
+            else
+            {
+                ShowErrorMessage("Неверный формат даты. Пример: 15.02 или 15.02(2)");
+            }
+        }
+
+        private bool TryParseDate(string input, out DateTime date, out int? lessonNumber)
+        {
+            date = DateTime.MinValue;
+            lessonNumber = null;
+
+            if (string.IsNullOrWhiteSpace(input)) return false;
+
+            input = input.Trim();
+
+            var numberMatch = System.Text.RegularExpressions.Regex.Match(input, @"\((\d+)\)");
+            if (numberMatch.Success)
+            {
+                if (int.TryParse(numberMatch.Groups[1].Value, out int num) && num >= 1 && num <= 5)
+                {
+                    lessonNumber = num;
+                    input = input.Substring(0, numberMatch.Index).Trim();
+                }
+            }
+
+            string cleanDate = input.TrimEnd('.');
+            string withYear = $"{cleanDate}.{DateTime.Now:yyyy}";
+
+            if (DateTime.TryParse(withYear, out date)) return true;
+            if (DateTime.TryParse(cleanDate, out date)) return true;
+
+            return false;
         }
 
         private void InitializeServices()
