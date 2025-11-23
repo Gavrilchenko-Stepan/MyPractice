@@ -9,5 +9,6 @@ namespace MyLibrary.Repositories
     public interface IJournalCommandRepository
     {
         bool AddLessonDate(string groupName, string subjectName, DateTime lessonDate, int? lessonNumber = null);
+        bool EditLessonDate(string groupName, string subjectName, DateTime oldDate, int? oldLessonNumber, DateTime newDate, int? newLessonNumber);
     }
 }
