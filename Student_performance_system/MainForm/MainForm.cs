@@ -45,13 +45,37 @@ namespace MainForm
             var column = dataGridViewJournal.Columns[e.ColumnIndex];
             var headerRect = dataGridViewJournal.GetCellDisplayRectangle(e.ColumnIndex, -1, true);
 
+            string currentHeader = column.HeaderText.ToString();
+            string editText = currentHeader;
+
+            // Автоматически добавляем скобки, если их нет
+            if (!currentHeader.Contains("(") || !currentHeader.Contains(")"))
+            {
+                // Извлекаем дату (формат "dd.MM.")
+                string datePart = currentHeader.TrimEnd('.');
+                if (DateTime.TryParseExact(datePart, "dd.MM", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+                {
+                    editText = $"{date:dd.MM.}()";
+                }
+            }
+
             var textBox = new TextBox
             {
-                Text = column.HeaderText.ToString(),
+                Text = editText,
                 Bounds = headerRect,
                 Font = dataGridViewJournal.ColumnHeadersDefaultCellStyle.Font,
                 BackColor = Color.LightYellow
             };
+
+            // Устанавливаем курсор между скобками
+            if (editText.EndsWith("()"))
+            {
+                textBox.Select(editText.Length - 1, 0);
+            }
+            else
+            {
+                textBox.SelectAll();
+            }
 
             textBox.KeyDown += (s, ke) =>
             {
@@ -67,7 +91,6 @@ namespace MainForm
 
             dataGridViewJournal.Controls.Add(textBox);
             textBox.Focus();
-            textBox.SelectAll();
         }
 
         private void SaveEdit(DataGridViewColumn column, string newHeader)
@@ -95,32 +118,41 @@ namespace MainForm
             }
         }
 
-        private bool TryParseDate(string input, out DateTime date, out int? lessonNumber)
+        private bool TryParseDate(string headerText, out DateTime date, out int? lessonNumber)
         {
             date = DateTime.MinValue;
             lessonNumber = null;
 
-            if (string.IsNullOrWhiteSpace(input)) return false;
+            if (string.IsNullOrEmpty(headerText))
+                return false;
 
-            input = input.Trim();
+            string datePart = headerText;
 
-            var numberMatch = System.Text.RegularExpressions.Regex.Match(input, @"\((\d+)\)");
-            if (numberMatch.Success)
+            // Парсим номер пары из скобок
+            if (headerText.Contains("(") && headerText.Contains(")"))
             {
-                if (int.TryParse(numberMatch.Groups[1].Value, out int num) && num >= 1 && num <= 5)
+                int openBracket = headerText.IndexOf('(');
+                int closeBracket = headerText.IndexOf(')');
+
+                datePart = headerText.Substring(0, openBracket).Trim();
+
+                string numberPart = headerText.Substring(openBracket + 1, closeBracket - openBracket - 1).Trim();
+                if (int.TryParse(numberPart, out int number) && number >= 1 && number <= 5)
                 {
-                    lessonNumber = num;
-                    input = input.Substring(0, numberMatch.Index).Trim();
+                    lessonNumber = number;
                 }
+                else if (!string.IsNullOrEmpty(numberPart))
+                {
+                    return false; // Некорректный номер пары
+                }
+                // Если numberPart пустой - lessonNumber останется null
             }
 
-            string cleanDate = input.TrimEnd('.');
-            string withYear = $"{cleanDate}.{DateTime.Now:yyyy}";
+            // Парсим дату (форматы: "dd.MM", "dd.MM.")
+            datePart = datePart.Trim().TrimEnd('.');
 
-            if (DateTime.TryParse(withYear, out date)) return true;
-            if (DateTime.TryParse(cleanDate, out date)) return true;
-
-            return false;
+            return DateTime.TryParseExact(datePart, "dd.MM", null,
+                System.Globalization.DateTimeStyles.None, out date);
         }
 
         private void InitializeServices()
