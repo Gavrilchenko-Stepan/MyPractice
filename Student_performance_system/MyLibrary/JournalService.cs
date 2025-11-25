@@ -82,5 +82,32 @@ namespace MyLibrary
         {
             return AddLessonDate(groupName, subjectName, lessonData.Date, lessonData.LessonNumber);
         }
+
+        // МЕТОД ДЛЯ РЕДАКТИРОВАНИЯ
+        public bool EditLessonDate(string groupName, string subjectName, DateTime oldDate, int? oldLessonNumber, DateTime newDate, int? newLessonNumber)
+        {
+            // Валидация бизнес-правил
+            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(subjectName))
+                throw new ArgumentException("Группа и предмет обязательны");
+
+            if (newDate > DateTime.Now)
+                throw new ArgumentException("Новая дата не может быть в будущем");
+
+            if (newLessonNumber.HasValue && (newLessonNumber < 1 || newLessonNumber > 5))
+                throw new ArgumentException("Номер пары должен быть от 1 до 5");
+
+            // Проверяем, что что-то изменилось
+            if (oldDate == newDate && oldLessonNumber == newLessonNumber)
+                throw new ArgumentException("Необходимо изменить дату или номер пары");
+
+            // Вызываем метод репозитория для редактирования
+            return _journalCommandRepository.EditLessonDate(
+                groupName,
+                subjectName,
+                oldDate,
+                oldLessonNumber,
+                newDate,
+                newLessonNumber);
+        }
     }
 }

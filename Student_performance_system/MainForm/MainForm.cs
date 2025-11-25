@@ -34,6 +34,125 @@ namespace MainForm
             InitializeServices();
             ShowLoginForm();
             Shown += (s, e) => LoadJournalAutomatically();
+
+            dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
+        }
+
+        private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex < 2 || e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return;
+
+            var column = dataGridViewJournal.Columns[e.ColumnIndex];
+            var headerRect = dataGridViewJournal.GetCellDisplayRectangle(e.ColumnIndex, -1, true);
+
+            string currentHeader = column.HeaderText.ToString();
+            string editText = currentHeader;
+
+            // Автоматически добавляем скобки, если их нет
+            if (!currentHeader.Contains("(") || !currentHeader.Contains(")"))
+            {
+                // Извлекаем дату (формат "dd.MM.")
+                string datePart = currentHeader.TrimEnd('.');
+                if (DateTime.TryParseExact(datePart, "dd.MM", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+                {
+                    editText = $"{date:dd.MM.}()";
+                }
+            }
+
+            var textBox = new TextBox
+            {
+                Text = editText,
+                Bounds = headerRect,
+                Font = dataGridViewJournal.ColumnHeadersDefaultCellStyle.Font,
+                BackColor = Color.LightYellow
+            };
+
+            // Устанавливаем курсор между скобками
+            if (editText.EndsWith("()"))
+            {
+                textBox.Select(editText.Length - 1, 0);
+            }
+            else
+            {
+                textBox.SelectAll();
+            }
+
+            textBox.KeyDown += (s, ke) =>
+            {
+                if (ke.KeyCode == Keys.Enter) SaveEdit(column, textBox.Text);
+                if (ke.KeyCode == Keys.Escape) textBox.Dispose();
+            };
+
+            textBox.LostFocus += (s, ev) =>
+            {
+                SaveEdit(column, textBox.Text);
+                textBox.Dispose();
+            };
+
+            dataGridViewJournal.Controls.Add(textBox);
+            textBox.Focus();
+        }
+
+        private void SaveEdit(DataGridViewColumn column, string newHeader)
+        {
+            if (TryParseDate(newHeader, out DateTime newDate, out int? newNumber) &&
+                TryParseDate(column.HeaderText.ToString(), out DateTime oldDate, out int? oldNumber))
+            {
+                if (newDate > DateTime.Now)
+                {
+                    ShowErrorMessage("Дата не может быть в будущем");
+                    return;
+                }
+
+                if (newDate != oldDate || newNumber != oldNumber)
+                {
+                    _presenter.EditLessonDate(
+                        new LessonData(oldDate, oldNumber),
+                        new LessonData(newDate, newNumber)
+                    );
+                }
+            }
+            else
+            {
+                ShowErrorMessage("Неверный формат даты. Пример: 15.02 или 15.02(2)");
+            }
+        }
+
+        private bool TryParseDate(string headerText, out DateTime date, out int? lessonNumber)
+        {
+            date = DateTime.MinValue;
+            lessonNumber = null;
+
+            if (string.IsNullOrEmpty(headerText))
+                return false;
+
+            string datePart = headerText;
+
+            // Парсим номер пары из скобок
+            if (headerText.Contains("(") && headerText.Contains(")"))
+            {
+                int openBracket = headerText.IndexOf('(');
+                int closeBracket = headerText.IndexOf(')');
+
+                datePart = headerText.Substring(0, openBracket).Trim();
+
+                string numberPart = headerText.Substring(openBracket + 1, closeBracket - openBracket - 1).Trim();
+                if (int.TryParse(numberPart, out int number) && number >= 1 && number <= 5)
+                {
+                    lessonNumber = number;
+                }
+                else if (!string.IsNullOrEmpty(numberPart))
+                {
+                    return false; // Некорректный номер пары
+                }
+                // Если numberPart пустой - lessonNumber останется null
+            }
+
+            // Парсим дату (форматы: "dd.MM", "dd.MM.")
+            datePart = datePart.Trim().TrimEnd('.');
+
+            return DateTime.TryParseExact(datePart, "dd.MM", null,
+                System.Globalization.DateTimeStyles.None, out date);
         }
 
         private void InitializeServices()

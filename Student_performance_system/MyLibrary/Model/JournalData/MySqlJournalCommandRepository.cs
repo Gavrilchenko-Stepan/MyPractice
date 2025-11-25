@@ -87,5 +87,79 @@ namespace MyLibrary.Repositories
                 throw new Exception($"Ошибка при добавлении даты занятия: {ex.Message}", ex);
             }
         }
+
+        // МЕТОД ДЛЯ РЕДАКТИРОВАНИЯ
+        public bool EditLessonDate(string groupName, string subjectName, DateTime oldDate, int? oldLessonNumber, DateTime newDate, int? newLessonNumber)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    // Получаем ID предмета
+                    string subjectIdSql = "SELECT subject_id FROM Subjects WHERE subject_name = @SubjectName";
+                    int subjectId;
+                    using (MySqlCommand subjectCommand = new MySqlCommand(subjectIdSql, connection))
+                    {
+                        subjectCommand.Parameters.AddWithValue("@SubjectName", subjectName);
+                        var result = subjectCommand.ExecuteScalar();
+                        if (result == null)
+                            throw new Exception($"Предмет '{subjectName}' не найден");
+                        subjectId = Convert.ToInt32(result);
+                    }
+
+                    // SQL запрос для обновления даты и номера пары
+                    string updateSql = @"
+                    UPDATE Grades g
+                    INNER JOIN Students s ON g.student_id = s.student_id
+                    SET g.grade_date = @NewDate, g.lesson_number = @NewLessonNumber
+                    WHERE s.group_name = @GroupName 
+                    AND g.subject_id = @SubjectId 
+                    AND g.grade_date = @OldDate";
+
+                    // Добавляем условие для старого номера пары
+                    if (oldLessonNumber.HasValue)
+                    {
+                        updateSql += " AND g.lesson_number = @OldLessonNumber";
+                    }
+                    else
+                    {
+                        updateSql += " AND g.lesson_number IS NULL";
+                    }
+
+                    using (MySqlCommand updateCommand = new MySqlCommand(updateSql, connection))
+                    {
+                        updateCommand.Parameters.AddWithValue("@GroupName", groupName);
+                        updateCommand.Parameters.AddWithValue("@SubjectId", subjectId);
+                        updateCommand.Parameters.AddWithValue("@OldDate", oldDate.Date);
+                        updateCommand.Parameters.AddWithValue("@NewDate", newDate.Date);
+
+                        // Параметры для нового номера пары
+                        if (newLessonNumber.HasValue)
+                        {
+                            updateCommand.Parameters.AddWithValue("@NewLessonNumber", newLessonNumber.Value);
+                        }
+                        else
+                        {
+                            updateCommand.Parameters.AddWithValue("@NewLessonNumber", DBNull.Value);
+                        }
+
+                        // Параметры для старого номера пары
+                        if (oldLessonNumber.HasValue)
+                        {
+                            updateCommand.Parameters.AddWithValue("@OldLessonNumber", oldLessonNumber.Value);
+                        }
+
+                        int affectedRows = updateCommand.ExecuteNonQuery();
+                        return affectedRows > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при редактировании даты занятия: {ex.Message}", ex);
+            }
+        }
     }
 }
