@@ -161,5 +161,72 @@ namespace MyLibrary.Repositories
                 throw new Exception($"Ошибка при редактировании даты занятия: {ex.Message}", ex);
             }
         }
+
+        public bool UpdateGrade(int studentId, int subjectId, DateTime lessonDate, int? lessonNumber, int? gradeValue)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string checkSql = @"SELECT COUNT(*) FROM Grades 
+                                      WHERE student_id = @StudentId 
+                                      AND subject_id = @SubjectId 
+                                      AND grade_date = @LessonDate 
+                                      AND (lesson_number = @LessonNumber OR (lesson_number IS NULL AND @LessonNumber IS NULL))";
+
+                    int existingRecords;
+                    using (MySqlCommand checkCommand = new MySqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@StudentId", studentId);
+                        checkCommand.Parameters.AddWithValue("@SubjectId", subjectId);
+                        checkCommand.Parameters.AddWithValue("@LessonDate", lessonDate.Date);
+                        checkCommand.Parameters.AddWithValue("@LessonNumber", lessonNumber ?? (object)DBNull.Value);
+                        existingRecords = Convert.ToInt32(checkCommand.ExecuteScalar());
+                    }
+
+                    if (existingRecords > 0)
+                    {
+                        string updateSql = @"UPDATE Grades SET grade_value = @GradeValue 
+                                           WHERE student_id = @StudentId 
+                                           AND subject_id = @SubjectId 
+                                           AND grade_date = @LessonDate 
+                                           AND (lesson_number = @LessonNumber OR (lesson_number IS NULL AND @LessonNumber IS NULL))";
+
+                        using (MySqlCommand updateCommand = new MySqlCommand(updateSql, connection))
+                        {
+                            updateCommand.Parameters.AddWithValue("@StudentId", studentId);
+                            updateCommand.Parameters.AddWithValue("@SubjectId", subjectId);
+                            updateCommand.Parameters.AddWithValue("@LessonDate", lessonDate.Date);
+                            updateCommand.Parameters.AddWithValue("@LessonNumber", lessonNumber ?? (object)DBNull.Value);
+                            updateCommand.Parameters.AddWithValue("@GradeValue", gradeValue ?? (object)DBNull.Value);
+
+                            return updateCommand.ExecuteNonQuery() > 0;
+                        }
+                    }
+                    else
+                    {
+                        string insertSql = @"INSERT INTO Grades (student_id, subject_id, grade_date, lesson_number, grade_value) 
+                                           VALUES (@StudentId, @SubjectId, @LessonDate, @LessonNumber, @GradeValue)";
+
+                        using (MySqlCommand insertCommand = new MySqlCommand(insertSql, connection))
+                        {
+                            insertCommand.Parameters.AddWithValue("@StudentId", studentId);
+                            insertCommand.Parameters.AddWithValue("@SubjectId", subjectId);
+                            insertCommand.Parameters.AddWithValue("@LessonDate", lessonDate.Date);
+                            insertCommand.Parameters.AddWithValue("@LessonNumber", lessonNumber ?? (object)DBNull.Value);
+                            insertCommand.Parameters.AddWithValue("@GradeValue", gradeValue ?? (object)DBNull.Value);
+
+                            return insertCommand.ExecuteNonQuery() > 0;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при обновлении оценки: {ex.Message}", ex);
+            }
+        }
     }
 }
