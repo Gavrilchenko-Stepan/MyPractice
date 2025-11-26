@@ -74,5 +74,33 @@ namespace MyLibrary.Repositories
                 throw new Exception($"Ошибка при получении оценок: {ex.Message}", ex);
             }
         }
+
+        public int GetSubjectId(string subjectName)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = "SELECT subject_id FROM Subjects WHERE subject_name = @SubjectName";
+
+                    using (MySqlCommand command = new MySqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@SubjectName", subjectName);
+                        var result = command.ExecuteScalar();
+
+                        if (result == null)
+                            throw new Exception($"Предмет '{subjectName}' не найден");
+
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при получении ID предмета: {ex.Message}", ex);
+            }
+        }
     }
 }
