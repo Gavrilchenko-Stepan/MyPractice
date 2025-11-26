@@ -116,6 +116,7 @@
     <Compile Include="TMySqlJournalCommandRepositoryGrade.cs" />
     <Compile Include="TMySqlGradeRepositoryGrade.cs" />
     <Compile Include="TJournalServiceGrade.cs" />
+    <Compile Include="TJournalPresenterGrade.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
