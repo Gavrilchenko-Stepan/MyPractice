@@ -15,7 +15,7 @@ namespace Tests
         [DataRow(0, "INSERT новой записи")]
         public void UpdateGrade_DifferentScenarios_ShouldExecuteCorrectOperation(int existingRecords, string description)
         {
-            var mockConnection = new Mock<MySqlConnection>("строка_подключения");
+            var mockConnection = new Mock<MySqlConnection>(It.IsAny<string>());
             var checkCommand = new Mock<MySqlCommand>();
             var mainCommand = new Mock<MySqlCommand>();
 
@@ -34,7 +34,7 @@ namespace Tests
 
             mockConnection.Setup(c => c.State).Returns(ConnectionState.Open);
 
-            var repository = new MySqlJournalCommandRepository("тестовая_строка_подключения");
+            var repository = new MySqlJournalCommandRepository("Server=test;Database=test;Uid=test;Pwd=test;Port=test");
 
             var result = repository.UpdateGrade(1, 1, DateTime.Now, 1, 5);
 
