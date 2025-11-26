@@ -115,6 +115,7 @@
     <Compile Include="TJournalPresenterEditDate.cs" />
     <Compile Include="TMySqlJournalCommandRepositoryGrade.cs" />
     <Compile Include="TMySqlGradeRepositoryGrade.cs" />
+    <Compile Include="TJournalServiceGrade.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
