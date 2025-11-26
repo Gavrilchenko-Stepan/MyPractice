@@ -13,7 +13,7 @@ namespace Tests
         [DataTestMethod]
         [DataRow(1, "UPDATE существующей записи")]
         [DataRow(0, "INSERT новой записи")]
-        public void UpdateGrade_РазныеСценарии_ДолженКорректноВыполнитьОперацию(int existingRecords, string description)
+        public void UpdateGrade_DifferentScenarios_ShouldExecuteCorrectOperation(int existingRecords, string description)
         {
             var mockConnection = new Mock<MySqlConnection>("строка_подключения");
             var checkCommand = new Mock<MySqlCommand>();
