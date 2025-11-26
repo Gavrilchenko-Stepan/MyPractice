@@ -57,6 +57,75 @@ namespace MainForm
             StartGradeEditing(e.RowIndex, e.ColumnIndex);
         }
 
+        private void StartGradeEditing(int rowIndex, int columnIndex)
+        {
+            try
+            {
+                RowData rowData = dataGridViewJournal.Rows[rowIndex].DataBoundItem as RowData;
+                if (rowData?.Student == null) return;
+
+                // Получаем дату из заголовка колонки
+                string columnHeaderText = dataGridViewJournal.Columns[columnIndex].HeaderText.ToString();
+
+                if (!TryParseDate(columnHeaderText, out DateTime lessonDate, out int? lessonNumber))
+                {
+                    ShowErrorMessage("Неверный формат даты в заголовке колонки");
+                    return;
+                }
+
+                // Находим текущую оценку
+                Grade currentGrade = rowData.Grades?.FirstOrDefault(g =>
+                    g.LessonDate.Date == lessonDate.Date &&
+                    g.LessonNumber == lessonNumber);
+
+                int? currentGradeValue = currentGrade?.GradeValue;
+
+                // Создаем TextBox для редактирования
+                var cellRect = dataGridViewJournal.GetCellDisplayRectangle(columnIndex, rowIndex, true);
+
+                var textBox = new TextBox
+                {
+                    Text = currentGradeValue?.ToString() ?? "",
+                    Bounds = cellRect,
+                    Font = dataGridViewJournal.Font,
+                    BackColor = Color.LightYellow,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    TextAlign = HorizontalAlignment.Center,
+                    MaxLength = 1
+                };
+
+                textBox.KeyDown += (s, ke) =>
+                {
+                    if (ke.KeyCode == Keys.Enter)
+                    {
+                        SaveGrade(rowData.Student.StudentId, lessonDate, lessonNumber, textBox.Text);
+                        textBox.Dispose();
+                    }
+                    else if (ke.KeyCode == Keys.Escape)
+                    {
+                        textBox.Dispose();
+                    }
+                };
+
+                textBox.LostFocus += (s, ev) =>
+                {
+                    if (!textBox.IsDisposed)
+                    {
+                        SaveGrade(rowData.Student.StudentId, lessonDate, lessonNumber, textBox.Text);
+                        textBox.Dispose();
+                    }
+                };
+
+                dataGridViewJournal.Controls.Add(textBox);
+                textBox.Focus();
+                textBox.SelectAll();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при начале редактирования: {ex.Message}");
+            }
+        }
+
         private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.ColumnIndex < 2 || e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return;
