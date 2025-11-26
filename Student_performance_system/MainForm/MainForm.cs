@@ -126,6 +126,33 @@ namespace MainForm
             }
         }
 
+        private void SaveGrade(int studentId, DateTime lessonDate, int? lessonNumber, string input)
+        {
+            try
+            {
+                int? gradeValue = null;
+
+                if (!string.IsNullOrWhiteSpace(input))
+                {
+                    if (int.TryParse(input, out int grade) && grade >= 2 && grade <= 5)
+                    {
+                        gradeValue = grade;
+                    }
+                    else
+                    {
+                        ShowErrorMessage("Оценка должна быть числом от 2 до 5");
+                        return;
+                    }
+                }
+
+                _presenter.UpdateGrade(studentId, lessonDate, lessonNumber, gradeValue);
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при сохранении оценки: {ex.Message}");
+            }
+        }
+
         private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.ColumnIndex < 2 || e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return;
