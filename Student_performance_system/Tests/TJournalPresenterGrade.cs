@@ -26,17 +26,14 @@ namespace Tests
             mockJournalService.Setup(s =>
                 s.UpdateGrade(1, "Математика", It.IsAny<DateTime>(), 1, 5)).Returns(serviceResult);
 
-            var loadJournalCalled = false;
-            mockView.Setup(v => v.LoadJournal()).Callback(() => loadJournalCalled = true);
-
             var presenter = new JournalPresenter(mockView.Object, mockJournalService.Object);
 
             presenter.UpdateGrade(1, DateTime.Now, 1, 5);
 
             if (serviceResult)
             {
+                mockJournalService.Verify(s => s.GetJournalData(It.IsAny<string>(), It.IsAny<string>()), Times.Once, description);
                 mockView.Verify(v => v.ShowSuccessMessage("Оценка успешно сохранена"), Times.Once, description);
-                Assert.IsTrue(loadJournalCalled, $"Журнал должен быть обновлен: {description}");
             }
             else
             {
