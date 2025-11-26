@@ -113,6 +113,7 @@
     <Compile Include="TJournalPresenterDate.cs" />
     <Compile Include="TJournalServiceDate.cs" />
     <Compile Include="TJournalPresenterEditDate.cs" />
+    <Compile Include="TMySqlJournalCommandRepositoryGrade.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
