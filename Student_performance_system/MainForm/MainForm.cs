@@ -43,7 +43,10 @@ namespace MainForm
 
         private void DataGridViewJournal_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            foreach (Control control in dataGridViewJournal.Controls.OfType<TextBox>().ToList())
+            {
+                control.Dispose();
+            }
         }
 
         private void DataGridViewJournal_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
