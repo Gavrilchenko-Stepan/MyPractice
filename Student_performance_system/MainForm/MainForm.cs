@@ -36,6 +36,22 @@ namespace MainForm
             Shown += (s, e) => LoadJournalAutomatically();
 
             dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
+
+            dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
+            dataGridViewJournal.Click += DataGridViewJournal_Click;
+        }
+
+        private void DataGridViewJournal_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DataGridViewJournal_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 2) return;
+            if (e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return; // Пропускаем колонку среднего балла
+
+            StartGradeEditing(e.RowIndex, e.ColumnIndex);
         }
 
         private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
