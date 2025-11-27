@@ -96,6 +96,7 @@ namespace MyLibrary.Presenter
         public List<string> GetGroups()
         {
             return _journalService.GetGroups();
+        }
         public void UpdateGrade(int studentId, DateTime lessonDate, int? lessonNumber, int? gradeValue)
         {
             try

@@ -97,8 +97,9 @@ namespace MainForm
             {
                 ShowErrorMessage($"Ошибка при загрузке групп: {ex.Message}");
 
-            dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
-            dataGridViewJournal.Click += DataGridViewJournal_Click;
+                dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
+                dataGridViewJournal.Click += DataGridViewJournal_Click;
+            }
         }
 
         private void DataGridViewJournal_Click(object sender, EventArgs e)
