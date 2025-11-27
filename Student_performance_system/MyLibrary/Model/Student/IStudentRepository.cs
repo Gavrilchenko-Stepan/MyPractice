@@ -9,5 +9,6 @@ namespace MyLibrary.Repositories
     public interface IStudentRepository
     {
         List<Student> GetStudentsByGroup(string groupName);
+        List<string> GetGroups();
     }
 }

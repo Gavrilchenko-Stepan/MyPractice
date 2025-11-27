@@ -110,6 +110,9 @@ namespace MyLibrary
                 newLessonNumber);
         }
 
+        public List<string> GetGroups()
+        {
+            return _studentRepository.GetGroups();
         public bool UpdateGrade(int studentId, string subjectName, DateTime lessonDate, int? lessonNumber, int? gradeValue)
         {
             if (gradeValue.HasValue && (gradeValue < 2 || gradeValue > 5))
