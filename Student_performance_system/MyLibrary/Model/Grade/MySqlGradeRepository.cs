@@ -102,5 +102,34 @@ namespace MyLibrary.Repositories
                 throw new Exception($"Ошибка при получении ID предмета: {ex.Message}", ex);
             }
         }
+
+        public List<string> GetSubjects()
+        {
+            List<string> subjects = new List<string>();
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string sql = @"SELECT subject_name FROM Subjects ORDER BY subject_name";
+                    using (MySqlCommand command = new MySqlCommand(sql, connection))
+                    {
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                subjects.Add(reader.GetString("subject_name"));
+                            }
+                        }
+                    }
+                }
+                return subjects;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при получении списка предметов: {ex.Message}", ex);
+            }
+        }
+
     }
 }
