@@ -36,6 +36,123 @@ namespace MainForm
             Shown += (s, e) => LoadJournalAutomatically();
 
             dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
+
+            dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
+            dataGridViewJournal.Click += DataGridViewJournal_Click;
+        }
+
+        private void DataGridViewJournal_Click(object sender, EventArgs e)
+        {
+            foreach (Control control in dataGridViewJournal.Controls.OfType<TextBox>().ToList())
+            {
+                control.Dispose();
+            }
+        }
+
+        private void DataGridViewJournal_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 2) return;
+            if (e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return; // Пропускаем колонку среднего балла
+
+            StartGradeEditing(e.RowIndex, e.ColumnIndex);
+        }
+
+        private void StartGradeEditing(int rowIndex, int columnIndex)
+        {
+            try
+            {
+                RowData rowData = dataGridViewJournal.Rows[rowIndex].DataBoundItem as RowData;
+                if (rowData?.Student == null) return;
+
+                // Получаем дату из заголовка колонки
+                string columnHeaderText = dataGridViewJournal.Columns[columnIndex].HeaderText.ToString();
+
+                if (!TryParseDate(columnHeaderText, out DateTime lessonDate, out int? lessonNumber))
+                {
+                    ShowErrorMessage("Неверный формат даты в заголовке колонки");
+                    return;
+                }
+
+                // Находим текущую оценку
+                Grade currentGrade = rowData.Grades?.FirstOrDefault(g =>
+                    g.LessonDate.Date == lessonDate.Date &&
+                    g.LessonNumber == lessonNumber);
+
+                int? currentGradeValue = currentGrade?.GradeValue;
+
+                // Создаем TextBox для редактирования
+                var cellRect = dataGridViewJournal.GetCellDisplayRectangle(columnIndex, rowIndex, true);
+
+                var textBox = new TextBox
+                {
+                    Text = currentGradeValue?.ToString() ?? "",
+                    Bounds = cellRect,
+                    Font = dataGridViewJournal.Font,
+                    BackColor = Color.LightYellow,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    TextAlign = HorizontalAlignment.Center,
+                    MaxLength = 1
+                };
+
+                textBox.KeyDown += (s, ke) =>
+                {
+                    if (ke.KeyCode == Keys.Enter)
+                    {
+                        SaveGrade(rowData.Student.StudentId, lessonDate, lessonNumber, textBox.Text);
+                        textBox.Dispose();
+                    }
+                    else if (ke.KeyCode == Keys.Escape)
+                    {
+                        textBox.Dispose();
+                    }
+                };
+
+                textBox.LostFocus += (s, ev) =>
+                {
+                    if (!textBox.IsDisposed)
+                    {
+                        SaveGrade(rowData.Student.StudentId, lessonDate, lessonNumber, textBox.Text);
+                        textBox.Dispose();
+                    }
+                };
+
+                dataGridViewJournal.Controls.Add(textBox);
+                textBox.Focus();
+                textBox.SelectAll();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при начале редактирования: {ex.Message}");
+            }
+        }
+
+        private void SaveGrade(int studentId, DateTime lessonDate, int? lessonNumber, string input)
+        {
+            try
+            {
+                int? gradeValue = null;
+
+                if (!string.IsNullOrWhiteSpace(input))
+                {
+                    if (int.TryParse(input, out int grade) && grade >= 2 && grade <= 5)
+                    {
+                        gradeValue = grade;
+                    }
+                    else
+                    {
+                        ShowErrorMessage("Оценка должна быть числом от 2 до 5");
+                        return;
+                    }
+                }
+
+                _presenter.UpdateGrade(studentId, lessonDate, lessonNumber, gradeValue);
+
+                dataGridViewJournal.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при сохранении оценки: {ex.Message}");
+            }
         }
 
         private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -145,13 +262,15 @@ namespace MainForm
                 {
                     return false; // Некорректный номер пары
                 }
-                // Если numberPart пустой - lessonNumber останется null
             }
 
             // Парсим дату (форматы: "dd.MM", "dd.MM.")
             datePart = datePart.Trim().TrimEnd('.');
 
-            return DateTime.TryParseExact(datePart, "dd.MM", null,
+            // Добавляем текущий год для корректного парсинга
+            string fullDateString = datePart + $".{DateTime.Now:yyyy}";
+
+            return DateTime.TryParseExact(fullDateString, "dd.MM.yyyy", null,
                 System.Globalization.DateTimeStyles.None, out date);
         }
 
@@ -193,19 +312,30 @@ namespace MainForm
             RowData rowData = dataGridViewJournal.Rows[e.RowIndex].DataBoundItem as RowData;
             if (rowData == null) return;
 
-            // Получаем дату из заголовка колонки
-            string columnHeaderText = dataGridViewJournal.Columns[e.ColumnIndex].HeaderText;
+            // Получаем колонку и ее имя
+            var column = dataGridViewJournal.Columns[e.ColumnIndex];
+            string columnName = column.Name;
 
-            // Ищем оценку для этой даты
-            Grade grade = rowData.Grades?.FirstOrDefault(g =>
-                g.LessonDate.ToString("dd.MM.") == columnHeaderText);
-
-            if (grade?.GradeValue.HasValue == true)
+            // Парсим дату и номер пары из имени колонки
+            if (TryParseDateFromColumnName(columnName, out DateTime lessonDate, out int? lessonNumber))
             {
-                e.Value = grade.GradeValue.Value.ToString();
-                e.CellStyle.BackColor = GetGradeColor(grade.GradeValue.Value);
-                e.CellStyle.ForeColor = Color.Black;
-                e.CellStyle.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+                // Ищем оценку для этой даты и номера пары
+                Grade grade = rowData.Grades?.FirstOrDefault(g =>
+                    g.LessonDate.Date == lessonDate.Date &&
+                    g.LessonNumber == lessonNumber);
+
+                if (grade?.GradeValue.HasValue == true)
+                {
+                    e.Value = grade.GradeValue.Value.ToString();
+                    e.CellStyle.BackColor = GetGradeColor(grade.GradeValue.Value);
+                    e.CellStyle.ForeColor = Color.Black;
+                    e.CellStyle.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+                }
+                else
+                {
+                    e.Value = "";
+                    e.CellStyle.BackColor = Color.White;
+                }
             }
             else
             {
@@ -214,6 +344,40 @@ namespace MainForm
             }
 
             e.FormattingApplied = true;
+        }
+
+        private bool TryParseDateFromColumnName(string columnName, out DateTime date, out int? lessonNumber)
+        {
+            date = DateTime.MinValue;
+            lessonNumber = null;
+
+            try
+            {
+                // Формат: "20241215_1" или "20241215_"
+                if (columnName.Contains("_"))
+                {
+                    var parts = columnName.Split('_');
+
+                    // Парсим дату из первой части
+                    if (DateTime.TryParseExact(parts[0], "yyyyMMdd", null,
+                        System.Globalization.DateTimeStyles.None, out date))
+                    {
+                        // Парсим номер пары из второй части
+                        if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1]) &&
+                            int.TryParse(parts[1], out int number))
+                        {
+                            lessonNumber = number;
+                        }
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // Игнорируем ошибки парсинга
+            }
+
+            return false;
         }
 
         public void DisplayJournal(JournalData journalData)
@@ -263,7 +427,7 @@ namespace MainForm
                 // Создаем колонки для каждой пары
                 foreach (var lesson in allLessons)
                 {
-                    string columnName = $"{lesson.Date:dd.MM.}|{lesson.LessonNumber}";
+                    string columnName = $"{lesson.Date:yyyyMMdd}_{lesson.LessonNumber}";
 
                     string headerText;
                     if (lesson.LessonNumber.HasValue)
@@ -277,7 +441,7 @@ namespace MainForm
 
                     var dateColumn = new DataGridViewTextBoxColumn
                     {
-                        Name = columnName,
+                        Name = columnName, // Важно: одинаковый формат для сопоставления
                         HeaderText = headerText,
                         Width = 70,
                         DefaultCellStyle = new DataGridViewCellStyle

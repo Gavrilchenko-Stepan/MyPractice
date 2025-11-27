@@ -109,5 +109,18 @@ namespace MyLibrary
                 newDate,
                 newLessonNumber);
         }
+
+        public bool UpdateGrade(int studentId, string subjectName, DateTime lessonDate, int? lessonNumber, int? gradeValue)
+        {
+            if (gradeValue.HasValue && (gradeValue < 2 || gradeValue > 5))
+                throw new ArgumentException("Оценка должна быть от 2 до 5");
+
+            if (lessonDate > DateTime.Now.Date)
+                throw new ArgumentException("Дата занятия не может быть в будущем");
+
+            int subjectId = _gradeRepository.GetSubjectId(subjectName);
+
+            return _journalCommandRepository.UpdateGrade(studentId, subjectId, lessonDate, lessonNumber, gradeValue);
+        }
     }
 }
