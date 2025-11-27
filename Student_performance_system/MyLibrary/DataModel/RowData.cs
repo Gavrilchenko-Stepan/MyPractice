@@ -13,5 +13,24 @@ namespace MyLibrary
         public List<Grade> Grades { get; set; }
 
         public string StudentName => Student?.FullName;
+
+        public double? AverageGrade
+        {
+            get
+            {
+                if (Grades == null || !Grades.Any())
+                    return null;
+
+                var validGrades = Grades
+                    .Where(g => g.GradeValue.HasValue && g.GradeValue.Value >= 2 && g.GradeValue.Value <= 5)
+                    .Select(g => g.GradeValue.Value)
+                    .ToList();
+
+                if (!validGrades.Any())
+                    return null;
+
+                return Math.Round(validGrades.Average(), 2);
+            }
+        }
     }
 }

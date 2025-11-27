@@ -453,7 +453,27 @@ namespace MainForm
             RowData rowData = dataGridViewJournal.Rows[e.RowIndex].DataBoundItem as RowData;
             if (rowData == null) return;
 
-            // Получаем колонку и ее имя
+            if (e.ColumnIndex == dataGridViewJournal.Columns["AverageGrade"]?.Index)
+            {
+                if (rowData.AverageGrade.HasValue)
+                {
+                    e.Value = rowData.AverageGrade.Value.ToString("0.00");
+                    e.CellStyle.BackColor = GetAverageGradeColor(rowData.AverageGrade.Value);
+                    e.CellStyle.ForeColor = Color.Black;
+                    e.CellStyle.Font = new Font(dataGridViewJournal.Font, FontStyle.Bold);
+                }
+                else
+                {
+                    e.Value = "—";
+                    e.CellStyle.BackColor = Color.White;
+                }
+                e.FormattingApplied = true;
+                return;
+            }
+
+            // Обработка обычных колонок с оценками (существующий код)
+            if (e.ColumnIndex < 2 || e.ColumnIndex >= dataGridViewJournal.Columns.Count - 1) return;
+
             var column = dataGridViewJournal.Columns[e.ColumnIndex];
             string columnName = column.Name;
 
@@ -485,6 +505,18 @@ namespace MainForm
             }
 
             e.FormattingApplied = true;
+        }
+
+        private Color GetAverageGradeColor(double average)
+        {
+            if (average >= 4.5)
+                return Color.LightGreen;
+            else if (average >= 3.5)
+                return Color.LightBlue;
+            else if (average >= 2.5)
+                return Color.LightYellow;
+            else
+                return Color.LightCoral;
         }
 
         private bool TryParseDateFromColumnName(string columnName, out DateTime date, out int? lessonNumber)
@@ -596,13 +628,15 @@ namespace MainForm
                 // Добавляем колонку среднего балла
                 dataGridViewJournal.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "Average",
+                    Name = "AverageGrade",
                     HeaderText = "Средний балл",
+                    DataPropertyName = "AverageGrade", // Связываем с новым свойством
                     Width = 100,
                     DefaultCellStyle = new DataGridViewCellStyle
                     {
                         Alignment = DataGridViewContentAlignment.MiddleCenter
-                    }
+                    },
+                    ReadOnly = true
                 });
 
                 // Устанавливаем источник данных
