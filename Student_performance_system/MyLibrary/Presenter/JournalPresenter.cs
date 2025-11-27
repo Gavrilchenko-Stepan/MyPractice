@@ -125,6 +125,11 @@ namespace MyLibrary.Presenter
             }
         }
 
+        public List<string> GetSubjects()
+        {
+            return _journalService.GetSubjects();
+        }
+
         private void ShowEditSuccessMessage(LessonData oldData, LessonData newData)
         {
             string message = $"Дата занятия изменена: {FormatLessonData(oldData)} → {FormatLessonData(newData)}";
