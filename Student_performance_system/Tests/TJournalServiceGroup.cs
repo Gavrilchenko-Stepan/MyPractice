@@ -18,7 +18,6 @@ namespace Tests
         [DataRow(new string[] { }, DisplayName = "Пустой список групп")]
         public void GetGroups_WithValidData_ReturnsSameDataFromRepository(string[] expectedGroups)
         {
-            // Arrange
             var mockStudentRepository = new Mock<IStudentRepository>();
             var mockGradeRepository = new Mock<IGradeRepository>();
             var mockCommandRepository = new Mock<IJournalCommandRepository>();
@@ -26,10 +25,8 @@ namespace Tests
             mockStudentRepository.Setup(r => r.GetGroups()).Returns(expectedGroups.ToList());
             var service = new JournalService(mockStudentRepository.Object, mockGradeRepository.Object, mockCommandRepository.Object);
 
-            // Act
             var result = service.GetGroups();
 
-            // Assert
             CollectionAssert.AreEqual(expectedGroups, result.ToArray());
             mockStudentRepository.Verify(r => r.GetGroups(), Times.Once);
             mockGradeRepository.VerifyNoOtherCalls();
