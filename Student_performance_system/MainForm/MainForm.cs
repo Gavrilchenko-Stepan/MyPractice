@@ -373,7 +373,7 @@ namespace MainForm
             }
         }
 
-        private bool TryParseDate(string headerText, out DateTime date, out int? lessonNumber)
+        public bool TryParseDate(string headerText, out DateTime date, out int? lessonNumber)
         {
             date = DateTime.MinValue;
             lessonNumber = null;

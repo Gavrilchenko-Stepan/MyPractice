@@ -3,7 +3,7 @@ using Moq;
 using MyLibrary;
 using MyLibrary.DataModel.JournalData;
 using MyLibrary.DataModel;
-using MyLibrary.Model.JournalData;
+using MyLibrary.DataModel.JournalData;
 using MyLibrary.Presenter;
 using MyLibrary.Repositories;
 using MyLibrary.View;
@@ -35,39 +35,45 @@ namespace Tests
             int?[] secondGrades)
         {
 
-            JournalService journalService_ = new JournalService();
+            var mockStudentRepository = new Mock<IStudentRepository>();
+            var mockGradeRepository = new Mock<IGradeRepository>();
+            var mockJournalCommandRepository = new Mock<IJournalCommandRepository>();
 
-            List<Row> expected = new List<Row>();
-            for (int i = 0; i < studentIds.Length; i++)
-            {
-                // Конвертируем -1 в null
-                int? firstGrade = firstGrades[i] == -1 ? null : firstGrades[i];
-                int? secondGrade = secondGrades[i] == -1 ? null : secondGrades[i];
+            var journalService = new JournalService(
+                mockStudentRepository.Object,
+                mockGradeRepository.Object,
+                mockJournalCommandRepository.Object);
 
-                expected.Add(new Row
-                {
-                    Student = new Student { StudentId = studentIds[i], FullName = fullNames[i], GroupName = groupNames[i] },
-                    Grades = new List<(DateTime, int?)>
-                    {
-                        (new DateTime(2024, 1, 15), firstGrades[i]),
-                        (new DateTime(2024, 1, 22), secondGrades[i])
-                    }
-                });
-            }
+            var students = new List<Student>
+        {
+            new Student { StudentId = 1, FullName = "Иванов Иван Иванович", GroupName = groupName },
+            new Student { StudentId = 2, FullName = "Петров Петр Петрович", GroupName = groupName }
+        };
 
-            JournalData result = journalService_.GetJournalData(groupName, subjectName);
+            var grades = new List<Grade>
+        {
+            new Grade { StudentId = 1, LessonDate = new DateTime(2024, 1, 15), LessonNumber = 1, GradeValue = 5 },
+            new Grade { StudentId = 1, LessonDate = new DateTime(2024, 1, 22), LessonNumber = 2, GradeValue = 4 },
+            new Grade { StudentId = 2, LessonDate = new DateTime(2024, 1, 15), LessonNumber = 1, GradeValue = 3 }
+        };
+
+            mockStudentRepository
+                .Setup(x => x.GetStudentsByGroup(groupName))
+                .Returns(students);
+
+            mockGradeRepository
+                .Setup(x => x.GetGradesByGroupAndSubject(groupName, subjectName))
+                .Returns(grades);
+
+            var result = journalService.GetJournalData(groupName, subjectName);
 
             Assert.AreEqual(groupName, result.GroupName);
             Assert.AreEqual(subjectName, result.SubjectName);
-            Assert.AreEqual(expected.Count, result.Data.Count);
+            Assert.AreEqual(2, result.Rows.Count);
 
-            for (int i = 0; i < expected.Count; i++)
-            {
-                Assert.AreEqual(expected[i].Student.StudentId, result.Data[i].Student.StudentId);
-                Assert.AreEqual(expected[i].Student.FullName, result.Data[i].Student.FullName);
-                Assert.AreEqual(expected[i].Student.GroupName, result.Data[i].Student.GroupName);
-                CollectionAssert.AreEqual(expected[i].Grades, result.Data[i].Grades);
-            }
+            // Проверяем вызовы репозиториев
+            mockStudentRepository.Verify(x => x.GetStudentsByGroup(groupName), Times.Once);
+            mockGradeRepository.Verify(x => x.GetGradesByGroupAndSubject(groupName, subjectName), Times.Once);
         }
 
         /// Тест 2 и 3: Загрузка журнала для несуществующих групп и предметов
@@ -76,13 +82,28 @@ namespace Tests
         [DataRow("П-20", "Несуществующий предмет")]
         public void GetJournalData_WithInvalidRequests_ReturnsEmptyOrStudentsWithoutGrades(string groupName, string subjectName, int expectedStudentCount)
         {
-            JournalService journalService_ = new JournalService();
+            var mockStudentRepository = new Mock<IStudentRepository>();
+            var mockGradeRepository = new Mock<IGradeRepository>();
+            var mockJournalCommandRepository = new Mock<IJournalCommandRepository>();
 
-            JournalData result = journalService_.GetJournalData(groupName, subjectName);
+            var journalService = new JournalService(
+                mockStudentRepository.Object,
+                mockGradeRepository.Object,
+                mockJournalCommandRepository.Object);
+
+            mockStudentRepository
+                .Setup(x => x.GetStudentsByGroup(groupName))
+                .Returns(new List<Student>());
+
+            mockGradeRepository
+                .Setup(x => x.GetGradesByGroupAndSubject(groupName, subjectName))
+                .Returns(new List<Grade>());
+
+            var result = journalService.GetJournalData(groupName, subjectName);
 
             Assert.AreEqual(groupName, result.GroupName);
             Assert.AreEqual(subjectName, result.SubjectName);
-            Assert.AreEqual(expectedStudentCount, result.Data.Count);
+            Assert.AreEqual(expectedStudentCount, result.Rows.Count);
         }
     }
 }

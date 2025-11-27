@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using MyLibrary.Model.JournalData;
+using MyLibrary.DataModel.JournalData;
 using MyLibrary.Repositories;
 using MyLibrary;
 using System;

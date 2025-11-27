@@ -129,6 +129,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MainForm\WinForms.csproj">
+      <Project>{AE7E8E71-CB60-459D-9010-0AC29B1DFF9F}</Project>
+      <Name>WinForms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MyLibrary\MyLibrary.csproj">
       <Project>{4fcd0a09-7415-4a11-8306-f64f0f08d4b6}</Project>
       <Name>MyLibrary</Name>
