@@ -23,7 +23,7 @@ namespace MainForm
         private JournalPresenter _presenter;
 
         public string GroupName => cmbGroups.SelectedItem?.ToString() == "Выберите группу" ? null : cmbGroups.SelectedItem?.ToString();
-        public string SubjectName => "Математика";
+        public string SubjectName => cmbSubjects.SelectedItem?.ToString() == "Выберите дисциплину" ? null : cmbSubjects.SelectedItem?.ToString();
 
         public MainForm()
         {
@@ -34,11 +34,73 @@ namespace MainForm
             Shown += (s, e) =>
             {
                 LoadGroups();
+                LoadSubjects();
                 LoadJournalAutomatically();
             };
 
             dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
             cmbGroups.SelectedIndexChanged += CmbGroups_SelectedIndexChanged;
+            cmbSubjects.SelectedIndexChanged += CmbSubjects_SelectedIndexChanged;
+        }
+
+        private void CmbSubjects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbSubjects.SelectedItem != null)
+            {
+                string selectedItem = cmbSubjects.SelectedItem.ToString();
+
+                if (selectedItem == "Выберите дисциплину")
+                {
+                    // Очищаем журнал если выбрана подсказка
+                    dataGridViewJournal.DataSource = null;
+                    dataGridViewJournal.Columns.Clear();
+                    UpdateWindowTitle();
+                }
+                else
+                {
+                    // УДАЛЯЕМ подсказку из списка после выбора реального предмета
+                    if (cmbSubjects.Items.Contains("Выберите дисциплину"))
+                    {
+                        cmbSubjects.Items.Remove("Выберите дисциплину");
+                    }
+
+                    // Загружаем журнал если выбрана группа
+                    if (!string.IsNullOrEmpty(GroupName))
+                    {
+                        _presenter.LoadJournal();
+                    }
+                    else
+                    {
+                        UpdateWindowTitle();
+                    }
+                }
+            }
+        }
+
+        private void LoadSubjects()
+        {
+            try
+            {
+                var subjects = _presenter.GetSubjects();
+                cmbSubjects.Items.Clear();
+
+                if (subjects.Count > 0)
+                {
+                    cmbSubjects.Items.Add("Выберите дисциплину");
+                    cmbSubjects.Items.AddRange(subjects.ToArray());
+                    cmbSubjects.SelectedIndex = 0;
+                }
+                else
+                {
+                    cmbSubjects.Items.AddRange(subjects.ToArray());
+                    if (cmbSubjects.Items.Count > 0)
+                        cmbSubjects.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при загрузке дисциплин: {ex.Message}");
+            }
         }
 
         private void CmbGroups_SelectedIndexChanged(object sender, EventArgs e)
@@ -52,7 +114,7 @@ namespace MainForm
                     // Очищаем журнал если выбрана подсказка
                     dataGridViewJournal.DataSource = null;
                     dataGridViewJournal.Columns.Clear();
-                    this.Text = "Журнал оценок - выберите группу";
+                    UpdateWindowTitle();
                 }
                 else
                 {
@@ -62,10 +124,24 @@ namespace MainForm
                         cmbGroups.Items.Remove("Выберите группу");
                     }
 
-                    // Загружаем журнал для выбранной группы
-                    _presenter.LoadJournal();
+                    // Загружаем журнал если выбран предмет
+                    if (!string.IsNullOrEmpty(SubjectName))
+                    {
+                        _presenter.LoadJournal();
+                    }
+                    else
+                    {
+                        UpdateWindowTitle();
+                    }
                 }
             }
+        }
+
+        private void UpdateWindowTitle()
+        {
+            string group = string.IsNullOrEmpty(GroupName) ? "выберите группу" : GroupName;
+            string subject = string.IsNullOrEmpty(SubjectName) ? "выберите дисциплину" : SubjectName;
+            this.Text = $"Журнал оценок - {group} - {subject}";
         }
 
         private void LoadGroups()
@@ -92,6 +168,7 @@ namespace MainForm
                 // ОЧИЩАЕМ журнал
                 dataGridViewJournal.DataSource = null;
                 dataGridViewJournal.Columns.Clear();
+
             }
             catch (Exception ex)
             {
@@ -366,7 +443,7 @@ namespace MainForm
             ///_presenter.LoadJournal();
             dataGridViewJournal.DataSource = null;
             dataGridViewJournal.Columns.Clear();
-            this.Text = "Журнал оценок - выберите группу";
+            UpdateWindowTitle();
         }
 
         private void DataGridViewJournal_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -612,6 +689,12 @@ namespace MainForm
             if (string.IsNullOrEmpty(GroupName))
             {
                 ShowErrorMessage("Сначала выберите группу");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(SubjectName))
+            {
+                ShowErrorMessage("Сначала выберите дисциплину");
                 return;
             }
 

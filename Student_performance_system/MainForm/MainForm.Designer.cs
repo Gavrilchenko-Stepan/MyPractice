@@ -36,6 +36,8 @@
             this.SelectPanel = new System.Windows.Forms.Panel();
             this.cmbGroups = new System.Windows.Forms.ComboBox();
             this.lblGroup = new System.Windows.Forms.Label();
+            this.lblSubject = new System.Windows.Forms.Label();
+            this.cmbSubjects = new System.Windows.Forms.ComboBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).BeginInit();
             this.SelectPanel.SuspendLayout();
@@ -87,6 +89,8 @@
             // 
             // SelectPanel
             // 
+            this.SelectPanel.Controls.Add(this.cmbSubjects);
+            this.SelectPanel.Controls.Add(this.lblSubject);
             this.SelectPanel.Controls.Add(this.cmbGroups);
             this.SelectPanel.Controls.Add(this.lblGroup);
             this.SelectPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -111,6 +115,23 @@
             this.lblGroup.TabIndex = 0;
             this.lblGroup.Text = "Группа:";
             // 
+            // lblSubject
+            // 
+            this.lblSubject.AutoSize = true;
+            this.lblSubject.Location = new System.Drawing.Point(262, 16);
+            this.lblSubject.Name = "lblSubject";
+            this.lblSubject.Size = new System.Drawing.Size(73, 13);
+            this.lblSubject.TabIndex = 2;
+            this.lblSubject.Text = "Дисциплина:";
+            // 
+            // cmbSubjects
+            // 
+            this.cmbSubjects.FormattingEnabled = true;
+            this.cmbSubjects.Location = new System.Drawing.Point(341, 13);
+            this.cmbSubjects.Name = "cmbSubjects";
+            this.cmbSubjects.Size = new System.Drawing.Size(205, 21);
+            this.cmbSubjects.TabIndex = 3;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -128,6 +149,7 @@
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).EndInit();
             this.SelectPanel.ResumeLayout(false);
+            this.SelectPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,6 +164,8 @@
         private System.Windows.Forms.Panel SelectPanel;
         private System.Windows.Forms.Label lblGroup;
         private System.Windows.Forms.ComboBox cmbGroups;
+        private System.Windows.Forms.ComboBox cmbSubjects;
+        private System.Windows.Forms.Label lblSubject;
     }
 }
 
