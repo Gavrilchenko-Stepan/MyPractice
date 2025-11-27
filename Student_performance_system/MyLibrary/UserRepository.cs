@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,57 +9,56 @@ namespace MyLibrary
 {
     public class UserRepository : IUserRepository
     {
-        private List<User> _users;
+        private readonly string _connectionString;
 
         public UserRepository()
         {
-            _users = new List<User>
-            {
-                new User
-                {
-                    Login = "ivanov",
-                    Password = "123",
-                    TeacherId = 1,
-                    Teacher = new Teacher
-                    {
-                        TeacherId = 1,
-                        LastName = "Иванов",
-                        FirstName = "Иван",
-                        MiddleName = "Иванович"
-                    }
-                },
-                new User
-                {
-                    Login = "petrov",
-                    Password = "456",
-                    TeacherId = 2,
-                    Teacher = new Teacher
-                    {
-                        TeacherId = 2,
-                        LastName = "Петров",
-                        FirstName = "Петр",
-                        MiddleName = "Петрович"
-                    }
-                },
-                new User
-                {
-                    Login = "sidorova",
-                    Password = "789",
-                    TeacherId = 3,
-                    Teacher = new Teacher
-                    {
-                        TeacherId = 3,
-                        LastName = "Сидорова",
-                        FirstName = "Мария",
-                        MiddleName = "Ивановна"
-                    }
-                }
-            };
+            _connectionString = IniConfig.ConnectionString;
+
+            if (string.IsNullOrEmpty(_connectionString))
+                throw new InvalidOperationException("Строка подключения не настроена");
         }
 
         public User GetUserByLogin(string login)
         {
-            return _users.FirstOrDefault(u => u.Login == login);
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    SELECT u.user_id, u.login, u.password, u.teacher_id,
+                           t.last_name, t.first_name, t.middle_name
+                    FROM users u
+                    INNER JOIN teachers t ON u.teacher_id = t.teacher_id
+                    WHERE u.login = @login";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@login", login);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Login = reader["login"].ToString(),
+                                Password = reader["password"].ToString(),
+                                TeacherId = Convert.ToInt32(reader["teacher_id"]),
+                                Teacher = new Teacher
+                                {
+                                    TeacherId = Convert.ToInt32(reader["teacher_id"]),
+                                    LastName = reader["last_name"].ToString(),
+                                    FirstName = reader["first_name"].ToString(),
+                                    MiddleName = reader["middle_name"]?.ToString()
+                                }
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         public bool ValidateUser(string login, string password)
