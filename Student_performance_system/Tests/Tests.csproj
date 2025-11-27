@@ -121,6 +121,7 @@
     <Compile Include="TMySqlGradeRepositoryGrade.cs" />
     <Compile Include="TJournalServiceGrade.cs" />
     <Compile Include="TJournalPresenterGrade.cs" />
+    <Compile Include="TAuthService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
