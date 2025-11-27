@@ -12,7 +12,6 @@ namespace Tests
         [DataRow("ivanov", "Password123")]
         public void Login_WithValidCredentials_ShouldCreateUserSessionAndOpenMainForm(string login, string password)
         {
-            // Arrange
             var userRepositoryMock = new Mock<IUserRepository>();
             var authService = new AuthService(userRepositoryMock.Object);
 
@@ -35,10 +34,8 @@ namespace Tests
                 .Setup(repo => repo.GetUserByLogin(login))
                 .Returns(expectedUser);
 
-            // Act
             bool loginResult = authService.Login(login, password);
 
-            // Assert
             Assert.IsTrue(loginResult, "Логин должен быть успешным");
             Assert.IsTrue(authService.IsAuthenticated, "Должна быть создана сессия пользователя");
             Assert.IsNotNull(authService.CurrentUser, "Текущий пользователь должен быть установлен");
@@ -49,6 +46,24 @@ namespace Tests
         [DataRow("petrov", "Password432")]
         public void Login_WithInvalidPassword_ShouldShowErrorMessageAndKeepFormOpen(string login, string password)
         {
+            var userRepositoryMock = new Mock<IUserRepository>();
+            var authService = new AuthService(userRepositoryMock.Object);
+
+            userRepositoryMock
+                .Setup(repo => repo.ValidateUser(login, password))
+                .Returns(false);
+
+            bool loginResult = authService.Login(login, password);
+
+            Assert.IsFalse(loginResult, "Логин должен завершиться неудачей");
+            Assert.IsFalse(authService.IsAuthenticated, "Сессия не должна быть создана");
+            Assert.IsNull(authService.CurrentUser, "Текущий пользователь не должен быть установлен");
+        }
+
+        [TestMethod]
+        [DataRow("nonexistent_user", "AnyPassword123")]
+        public void Login_WithNonExistentLogin_ShouldShowErrorMessageAndKeepFormActive(string login, string password)
+        {
             // Arrange
             var userRepositoryMock = new Mock<IUserRepository>();
             var authService = new AuthService(userRepositoryMock.Object);
@@ -56,6 +71,9 @@ namespace Tests
             userRepositoryMock
                 .Setup(repo => repo.ValidateUser(login, password))
                 .Returns(false);
+            userRepositoryMock
+                .Setup(repo => repo.GetUserByLogin(login))
+                .Returns((User)null);
 
             // Act
             bool loginResult = authService.Login(login, password);
