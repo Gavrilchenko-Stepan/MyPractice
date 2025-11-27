@@ -33,8 +33,12 @@
             this.toolStripButtonLogout = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.dataGridViewJournal = new System.Windows.Forms.DataGridView();
+            this.SelectPanel = new System.Windows.Forms.Panel();
+            this.cmbGroups = new System.Windows.Forms.ComboBox();
+            this.lblGroup = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).BeginInit();
+            this.SelectPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -74,12 +78,38 @@
             this.dataGridViewJournal.AllowUserToDeleteRows = false;
             this.dataGridViewJournal.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewJournal.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewJournal.Location = new System.Drawing.Point(0, 25);
+            this.dataGridViewJournal.Location = new System.Drawing.Point(0, 72);
             this.dataGridViewJournal.Name = "dataGridViewJournal";
             this.dataGridViewJournal.ReadOnly = true;
             this.dataGridViewJournal.RowHeadersVisible = false;
-            this.dataGridViewJournal.Size = new System.Drawing.Size(1184, 536);
+            this.dataGridViewJournal.Size = new System.Drawing.Size(1184, 489);
             this.dataGridViewJournal.TabIndex = 2;
+            // 
+            // SelectPanel
+            // 
+            this.SelectPanel.Controls.Add(this.cmbGroups);
+            this.SelectPanel.Controls.Add(this.lblGroup);
+            this.SelectPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SelectPanel.Location = new System.Drawing.Point(0, 25);
+            this.SelectPanel.Name = "SelectPanel";
+            this.SelectPanel.Size = new System.Drawing.Size(1184, 47);
+            this.SelectPanel.TabIndex = 3;
+            // 
+            // cmbGroups
+            // 
+            this.cmbGroups.FormattingEnabled = true;
+            this.cmbGroups.Location = new System.Drawing.Point(82, 13);
+            this.cmbGroups.Name = "cmbGroups";
+            this.cmbGroups.Size = new System.Drawing.Size(142, 21);
+            this.cmbGroups.TabIndex = 1;
+            // 
+            // lblGroup
+            // 
+            this.lblGroup.Location = new System.Drawing.Point(28, 16);
+            this.lblGroup.Name = "lblGroup";
+            this.lblGroup.Size = new System.Drawing.Size(48, 13);
+            this.lblGroup.TabIndex = 0;
+            this.lblGroup.Text = "Группа:";
             // 
             // MainForm
             // 
@@ -88,6 +118,7 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1184, 561);
             this.Controls.Add(this.dataGridViewJournal);
+            this.Controls.Add(this.SelectPanel);
             this.Controls.Add(this.toolStrip1);
             this.Location = new System.Drawing.Point(10, 15);
             this.Name = "MainForm";
@@ -96,6 +127,7 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).EndInit();
+            this.SelectPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,6 +139,9 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonLogout;
         private System.Windows.Forms.DataGridView dataGridViewJournal;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.Panel SelectPanel;
+        private System.Windows.Forms.Label lblGroup;
+        private System.Windows.Forms.ComboBox cmbGroups;
     }
 }
 

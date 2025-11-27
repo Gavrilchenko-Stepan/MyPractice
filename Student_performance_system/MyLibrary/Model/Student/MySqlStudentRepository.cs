@@ -66,5 +66,33 @@ namespace MyLibrary.Repositories
                 throw new Exception($"Ошибка при получении студентов: {ex.Message}", ex);
             }
         }
+
+        public List<string> GetGroups()
+        {
+            List<string> groups = new List<string>();
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string sql = @"SELECT DISTINCT group_name FROM Students ORDER BY group_name";
+                    using (MySqlCommand command = new MySqlCommand(sql, connection))
+                    {
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                groups.Add(reader.GetString("group_name"));
+                            }
+                        }
+                    }
+                }
+                return groups;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при получении списка групп: {ex.Message}", ex);
+            }
+        }
     }
 }
