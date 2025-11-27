@@ -39,7 +39,6 @@ namespace Tests
         [DataRow(new int[] { 1, 7, 10 })]
         public void CalculateAverageGrade_WithNoValidGrades_ReturnsNull(int[] grades)
         {
-            // Arrange
             var student = new Student { StudentId = 1, FullName = "Тест", GroupName = "Группа-1" };
             var rowData = new RowData
             {
@@ -53,11 +52,47 @@ namespace Tests
                 }).ToList()
             };
 
-            // Act
             var result = rowData.AverageGrade;
 
-            // Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [DataRow(new int[] { 5, 4 }, new int[] { 3 }, 4.00)]
+        [DataRow(new int[] { 5, 5 }, new int[] { 2 }, 4.00)]
+        [DataRow(new int[] { 3, 3 }, new int[] { 5 }, 3.67)]
+        public void AverageGrade_AutoRecalculates_WhenGradesChange(int[] initialGrades, int[] newGrades, double expectedFinalAverage)
+        {
+            var student = new Student { StudentId = 1, FullName = "Тест", GroupName = "Группа-1" };
+            var rowData = new RowData
+            {
+                Student = student,
+                Grades = initialGrades.Select((g, index) => new Grade
+                {
+                    StudentId = 1,
+                    GradeValue = g,
+                    LessonDate = DateTime.Now.AddDays(index),
+                    LessonNumber = index + 1
+                }).ToList()
+            };
+
+            var initialAverage = rowData.AverageGrade;
+
+            foreach (var newGrade in newGrades)
+            {
+                rowData.Grades.Add(new Grade
+                {
+                    StudentId = 1,
+                    GradeValue = newGrade,
+                    LessonDate = DateTime.Now.AddDays(rowData.Grades.Count),
+                    LessonNumber = rowData.Grades.Count + 1
+                });
+            }
+
+            var finalAverage = rowData.AverageGrade;
+
+            Assert.AreEqual(expectedFinalAverage, finalAverage.Value, 0.01);
+            Assert.AreNotEqual(initialAverage, finalAverage);
         }
     }
 }
