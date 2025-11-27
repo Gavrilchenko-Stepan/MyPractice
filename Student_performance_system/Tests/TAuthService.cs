@@ -44,5 +44,26 @@ namespace Tests
             Assert.IsNotNull(authService.CurrentUser, "Текущий пользователь должен быть установлен");
             Assert.AreEqual(login, authService.CurrentUser.Login, "Должен быть установлен корректный пользователь");
         }
+
+        [TestMethod]
+        [DataRow("petrov", "Password432")]
+        public void Login_WithInvalidPassword_ShouldShowErrorMessageAndKeepFormOpen(string login, string password)
+        {
+            // Arrange
+            var userRepositoryMock = new Mock<IUserRepository>();
+            var authService = new AuthService(userRepositoryMock.Object);
+
+            userRepositoryMock
+                .Setup(repo => repo.ValidateUser(login, password))
+                .Returns(false);
+
+            // Act
+            bool loginResult = authService.Login(login, password);
+
+            // Assert
+            Assert.IsFalse(loginResult, "Логин должен завершиться неудачей");
+            Assert.IsFalse(authService.IsAuthenticated, "Сессия не должна быть создана");
+            Assert.IsNull(authService.CurrentUser, "Текущий пользователь не должен быть установлен");
+        }
     }
 }
