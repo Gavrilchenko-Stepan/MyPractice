@@ -64,7 +64,6 @@ namespace Tests
         [DataRow("nonexistent_user", "AnyPassword123")]
         public void Login_WithNonExistentLogin_ShouldShowErrorMessageAndKeepFormActive(string login, string password)
         {
-            // Arrange
             var userRepositoryMock = new Mock<IUserRepository>();
             var authService = new AuthService(userRepositoryMock.Object);
 
@@ -75,10 +74,8 @@ namespace Tests
                 .Setup(repo => repo.GetUserByLogin(login))
                 .Returns((User)null);
 
-            // Act
             bool loginResult = authService.Login(login, password);
 
-            // Assert
             Assert.IsFalse(loginResult, "Логин должен завершиться неудачей");
             Assert.IsFalse(authService.IsAuthenticated, "Сессия не должна быть создана");
             Assert.IsNull(authService.CurrentUser, "Текущий пользователь не должен быть установлен");
