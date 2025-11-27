@@ -10,5 +10,6 @@ namespace MyLibrary.Repositories
     {
         List<Grade> GetGradesByGroupAndSubject(string groupName, string subjectName);
         int GetSubjectId(string subjectName);
+        List<string> GetSubjects();
     }
 }
