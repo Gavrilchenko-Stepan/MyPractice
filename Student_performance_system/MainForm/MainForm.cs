@@ -21,11 +21,9 @@ namespace MainForm
     {
         private AuthService _authService;
         private JournalPresenter _presenter;
-        private string _currentGroupName = "П-10";
-        private string _currentSubjectName = "Математика";
 
-        public string GroupName => _currentGroupName;
-        public string SubjectName => _currentSubjectName;
+        public string GroupName => cmbGroups.SelectedItem?.ToString();
+        public string SubjectName => "Математика";
 
         public MainForm()
         {
@@ -33,9 +31,39 @@ namespace MainForm
 
             InitializeServices();
             ShowLoginForm();
-            Shown += (s, e) => LoadJournalAutomatically();
+            Shown += (s, e) =>
+            {
+                LoadGroups();
+                LoadJournalAutomatically();
+            };
 
             dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
+            cmbGroups.SelectedIndexChanged += CmbGroups_SelectedIndexChanged;
+        }
+
+        private void CmbGroups_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbGroups.SelectedItem != null)
+            {
+                _presenter.LoadJournal();
+            }
+        }
+
+        private void LoadGroups()
+        {
+            try
+            {
+                var groups = _presenter.GetGroups();
+                cmbGroups.Items.Clear();
+                cmbGroups.Items.AddRange(groups.ToArray());
+
+                if (cmbGroups.Items.Count > 0)
+                    cmbGroups.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Ошибка при загрузке групп: {ex.Message}");
+            }
         }
 
         private void DataGridViewJournal_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
