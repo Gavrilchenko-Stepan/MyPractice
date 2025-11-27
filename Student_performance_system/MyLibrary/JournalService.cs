@@ -109,5 +109,10 @@ namespace MyLibrary
                 newDate,
                 newLessonNumber);
         }
+
+        public List<string> GetGroups()
+        {
+            return _studentRepository.GetGroups();
+        }
     }
 }
