@@ -96,6 +96,32 @@ namespace MyLibrary.Presenter
         public List<string> GetGroups()
         {
             return _journalService.GetGroups();
+        public void UpdateGrade(int studentId, DateTime lessonDate, int? lessonNumber, int? gradeValue)
+        {
+            try
+            {
+                bool success = _journalService.UpdateGrade(
+                    studentId,
+                    _view.SubjectName,
+                    lessonDate,
+                    lessonNumber,
+                    gradeValue
+                );
+
+                if (success)
+                {
+                    LoadJournal();
+                    _view.ShowSuccessMessage("Оценка успешно сохранена");
+                }
+                else
+                {
+                    _view.ShowErrorMessage("Не удалось сохранить оценку");
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowErrorMessage($"Ошибка при сохранении оценки: {ex.Message}");
+            }
         }
 
         private void ShowEditSuccessMessage(LessonData oldData, LessonData newData)

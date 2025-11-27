@@ -10,5 +10,6 @@ namespace MyLibrary.Repositories
     {
         bool AddLessonDate(string groupName, string subjectName, DateTime lessonDate, int? lessonNumber = null);
         bool EditLessonDate(string groupName, string subjectName, DateTime oldDate, int? oldLessonNumber, DateTime newDate, int? newLessonNumber);
+        bool UpdateGrade(int studentId, int subjectId, DateTime lessonDate, int? lessonNumber, int? gradeValue);
     }
 }
