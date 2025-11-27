@@ -22,7 +22,7 @@ namespace MainForm
         private AuthService _authService;
         private JournalPresenter _presenter;
 
-        public string GroupName => cmbGroups.SelectedItem?.ToString();
+        public string GroupName => cmbGroups.SelectedItem?.ToString() == "Выберите группу" ? null : cmbGroups.SelectedItem?.ToString();
         public string SubjectName => "Математика";
 
         public MainForm()
@@ -45,7 +45,26 @@ namespace MainForm
         {
             if (cmbGroups.SelectedItem != null)
             {
-                _presenter.LoadJournal();
+                string selectedItem = cmbGroups.SelectedItem.ToString();
+
+                if (selectedItem == "Выберите группу")
+                {
+                    // Очищаем журнал если выбрана подсказка
+                    dataGridViewJournal.DataSource = null;
+                    dataGridViewJournal.Columns.Clear();
+                    this.Text = "Журнал оценок - выберите группу";
+                }
+                else
+                {
+                    // УДАЛЯЕМ подсказку из списка после выбора реальной группы
+                    if (cmbGroups.Items.Contains("Выберите группу"))
+                    {
+                        cmbGroups.Items.Remove("Выберите группу");
+                    }
+
+                    // Загружаем журнал для выбранной группы
+                    _presenter.LoadJournal();
+                }
             }
         }
 
@@ -55,10 +74,24 @@ namespace MainForm
             {
                 var groups = _presenter.GetGroups();
                 cmbGroups.Items.Clear();
-                cmbGroups.Items.AddRange(groups.ToArray());
 
-                if (cmbGroups.Items.Count > 0)
-                    cmbGroups.SelectedIndex = 0;
+                // ДОБАВЛЯЕМ подсказку только если есть реальные группы
+                if (groups.Count > 0)
+                {
+                    cmbGroups.Items.Add("Выберите группу");
+                    cmbGroups.Items.AddRange(groups.ToArray());
+                    cmbGroups.SelectedIndex = 0; // Выбираем подсказку
+                }
+                else
+                {
+                    cmbGroups.Items.AddRange(groups.ToArray());
+                    if (cmbGroups.Items.Count > 0)
+                        cmbGroups.SelectedIndex = 0;
+                }
+
+                // ОЧИЩАЕМ журнал
+                dataGridViewJournal.DataSource = null;
+                dataGridViewJournal.Columns.Clear();
             }
             catch (Exception ex)
             {
@@ -211,7 +244,10 @@ namespace MainForm
 
         private void LoadJournalAutomatically()
         {
-            _presenter.LoadJournal();
+            ///_presenter.LoadJournal();
+            dataGridViewJournal.DataSource = null;
+            dataGridViewJournal.Columns.Clear();
+            this.Text = "Журнал оценок - выберите группу";
         }
 
         private void DataGridViewJournal_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -409,6 +445,12 @@ namespace MainForm
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(GroupName))
+            {
+                ShowErrorMessage("Сначала выберите группу");
+                return;
+            }
+
             try
             {
                 _presenter.AddLessonDate();
