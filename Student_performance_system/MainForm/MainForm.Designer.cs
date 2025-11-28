@@ -34,10 +34,10 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.dataGridViewJournal = new System.Windows.Forms.DataGridView();
             this.SelectPanel = new System.Windows.Forms.Panel();
+            this.cmbSubjects = new System.Windows.Forms.ComboBox();
+            this.lblSubject = new System.Windows.Forms.Label();
             this.cmbGroups = new System.Windows.Forms.ComboBox();
             this.lblGroup = new System.Windows.Forms.Label();
-            this.lblSubject = new System.Windows.Forms.Label();
-            this.cmbSubjects = new System.Windows.Forms.ComboBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewJournal)).BeginInit();
             this.SelectPanel.SuspendLayout();
@@ -61,8 +61,8 @@
             this.toolStripButtonLogout.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonLogout.Image")));
             this.toolStripButtonLogout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonLogout.Name = "toolStripButtonLogout";
-            this.toolStripButtonLogout.Size = new System.Drawing.Size(46, 22);
-            this.toolStripButtonLogout.Text = "Выход";
+            this.toolStripButtonLogout.Size = new System.Drawing.Size(112, 22);
+            this.toolStripButtonLogout.Text = "Выход из системы";
             this.toolStripButtonLogout.Click += new System.EventHandler(this.toolStripButtonLogout_Click);
             // 
             // toolStripButton1
@@ -99,6 +99,23 @@
             this.SelectPanel.Size = new System.Drawing.Size(1184, 47);
             this.SelectPanel.TabIndex = 3;
             // 
+            // cmbSubjects
+            // 
+            this.cmbSubjects.FormattingEnabled = true;
+            this.cmbSubjects.Location = new System.Drawing.Point(341, 13);
+            this.cmbSubjects.Name = "cmbSubjects";
+            this.cmbSubjects.Size = new System.Drawing.Size(205, 21);
+            this.cmbSubjects.TabIndex = 3;
+            // 
+            // lblSubject
+            // 
+            this.lblSubject.AutoSize = true;
+            this.lblSubject.Location = new System.Drawing.Point(262, 16);
+            this.lblSubject.Name = "lblSubject";
+            this.lblSubject.Size = new System.Drawing.Size(73, 13);
+            this.lblSubject.TabIndex = 2;
+            this.lblSubject.Text = "Дисциплина:";
+            // 
             // cmbGroups
             // 
             this.cmbGroups.FormattingEnabled = true;
@@ -114,23 +131,6 @@
             this.lblGroup.Size = new System.Drawing.Size(48, 13);
             this.lblGroup.TabIndex = 0;
             this.lblGroup.Text = "Группа:";
-            // 
-            // lblSubject
-            // 
-            this.lblSubject.AutoSize = true;
-            this.lblSubject.Location = new System.Drawing.Point(262, 16);
-            this.lblSubject.Name = "lblSubject";
-            this.lblSubject.Size = new System.Drawing.Size(73, 13);
-            this.lblSubject.TabIndex = 2;
-            this.lblSubject.Text = "Дисциплина:";
-            // 
-            // cmbSubjects
-            // 
-            this.cmbSubjects.FormattingEnabled = true;
-            this.cmbSubjects.Location = new System.Drawing.Point(341, 13);
-            this.cmbSubjects.Name = "cmbSubjects";
-            this.cmbSubjects.Size = new System.Drawing.Size(205, 21);
-            this.cmbSubjects.TabIndex = 3;
             // 
             // MainForm
             // 
