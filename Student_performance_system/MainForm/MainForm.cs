@@ -21,7 +21,6 @@ namespace MainForm
     {
         private AuthService _authService;
         private JournalPresenter _presenter;
-
         public string GroupName => cmbGroups.SelectedItem?.ToString() == "Выберите группу" ? null : cmbGroups.SelectedItem?.ToString();
         public string SubjectName => cmbSubjects.SelectedItem?.ToString() == "Выберите дисциплину" ? null : cmbSubjects.SelectedItem?.ToString();
 
