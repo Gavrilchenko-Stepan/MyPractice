@@ -40,6 +40,9 @@ namespace MainForm
             dataGridViewJournal.ColumnHeaderMouseDoubleClick += DataGridViewJournal_ColumnHeaderMouseDoubleClick;
             cmbGroups.SelectedIndexChanged += CmbGroups_SelectedIndexChanged;
             cmbSubjects.SelectedIndexChanged += CmbSubjects_SelectedIndexChanged;
+
+            dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
+            dataGridViewJournal.Click += DataGridViewJournal_Click;
         }
 
         private void CmbSubjects_SelectedIndexChanged(object sender, EventArgs e)
@@ -172,9 +175,6 @@ namespace MainForm
             catch (Exception ex)
             {
                 ShowErrorMessage($"Ошибка при загрузке групп: {ex.Message}");
-
-                dataGridViewJournal.CellDoubleClick += DataGridViewJournal_CellDoubleClick;
-                dataGridViewJournal.Click += DataGridViewJournal_Click;
             }
         }
 
